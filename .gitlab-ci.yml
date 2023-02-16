@@ -24,8 +24,6 @@ create_php_code_sniffer_rapport:
     - branches
   script:
     - test -d ../dev-tools/ && rm -Rf ../dev-tools/
-    - test -d ../PHPCompatibility/ && rm -Rf ../PHPCompatibility
-    - test -d ../PHPCSUtils && rm -Rf ../PHPCSUtils
     - git clone --depth 1 https://gitlab.fusiondirectory.org/fusiondirectory/dev-tools.git ../dev-tools
     - find . -type f -name '*.php' -o -name '*.inc' > ./filelist
     - /root/.composer/vendor/bin/phpcs --standard=../dev-tools/php-codesniffer-rules/FDStandard/ruleset.xml --file-list=./filelist
@@ -43,7 +41,9 @@ create_phpstan_rapport:
   script:
     - test -d ../dev-tools/ && rm -Rf ../dev-tools/
     - git clone --depth 1 https://gitlab.fusiondirectory.org/fusiondirectory/dev-tools.git ../dev-tools
+    - composer global require phpstan/phpstan=0.12.94
     - cp ../dev-tools/phpstan/fusiondirectory-integrator/*.neon .
+    - composer global require phpstan/phpstan=0.12.94
     - /root/.composer/vendor/bin/phpstan analyse -c phpstan.neon
 
 build-tarballs:
@@ -51,7 +51,6 @@ build-tarballs:
   only:
     - main
   script:
-    - test -d ../fusiondirectory-integrator/ && rm -Rf ../fusiondirectory-integrator/
     - mkdir ../fusiondirectory-integrator/
     - mv ./* ../fusiondirectory-integrator/
     - mv  ../fusiondirectory-integrator/ ./
