@@ -1,0 +1,75 @@
+stages:
+  - lint
+  - codestyle
+  - tarballs
+
+## Stage lint
+
+# PHP lint
+create_php_lint_rapport:
+  image: registry.fusiondirectory.org/fusiondirectory/fd/phpcodesniffer-cli:buster
+  stage: lint
+  only:
+    - branches
+  script:
+    - find . -type f -name '*.php' -o -name '*.inc' -print0 | xargs -0 -n1 php -l
+
+## Stage codestyle
+
+# PHP codesniffer
+create_php_code_sniffer_rapport:
+  image: registry.fusiondirectory.org/fusiondirectory/fd/phpcodesniffer-cli:buster
+  stage: codestyle
+  only:
+    - branches
+  script:
+    - test -d ../dev-tools/ && rm -Rf ../dev-tools/
+    - test -d ../PHPCompatibility/ && rm -Rf ../PHPCompatibility
+    - test -d ../PHPCSUtils && rm -Rf ../PHPCSUtils
+    - git clone --depth 1 https://gitlab.fusiondirectory.org/fusiondirectory/dev-tools.git ../dev-tools
+    - find . -type f -name '*.php' -o -name '*.inc' > ./filelist
+    - /root/.composer/vendor/bin/phpcs --standard=../dev-tools/php-codesniffer-rules/FDStandard/ruleset.xml --file-list=./filelist
+    - git clone --depth 1 https://gitlab.fusiondirectory.org/php-tools/PHPCompatibility.git ../PHPCompatibility
+    - git clone --depth 1 https://gitlab.fusiondirectory.org/php-tools/PHPCSUtils.git ../PHPCSUtils
+    - /root/.composer/vendor/bin/phpcs --config-set installed_paths /builds/fusiondirectory/PHPCompatibility,/builds/fusiondirectory/PHPCSUtils
+    - /root/.composer/vendor/bin/phpcs --standard=PHPCompatibility --runtime-set testVersion 7.3-7.4 --file-list=./filelist
+
+# phpstan
+create_phpstan_rapport:
+  image: registry.fusiondirectory.org/fusiondirectory/fd/phpstan:buster
+  stage: codestyle
+  only:
+    - branches
+  script:
+    - test -d ../dev-tools/ && rm -Rf ../dev-tools/
+    - git clone --depth 1 https://gitlab.fusiondirectory.org/fusiondirectory/dev-tools.git ../dev-tools
+    - cp ../dev-tools/phpstan/fusiondirectory-integrator/*.neon .
+    - /root/.composer/vendor/bin/phpstan analyse -c phpstan.neon
+
+build-tarballs:
+  stage: tarballs
+  only:
+    - 0.9-dev
+  script:
+    - mkdir ../fusiondirectory-integrator/
+    - mv ./* ../fusiondirectory-integrator/
+    - mv  ../fusiondirectory-integrator/ ./
+    - tar -cvzf fusiondirectory-integrator.tar.gz *
+  artifacts:
+    paths:
+      - fusiondirectory-integrator.tar.gz
+    expire_in: 30d
+
+build-release:
+  stage: tarballs
+  only:
+    - tags
+  script:
+    - mkdir ../fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"')/
+    - mv ./* ../fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"')/
+    - mv  ../fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"')/ ./
+    - tar -cvzf fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"').tar.gz *
+  artifacts:
+    paths:
+      - fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"').tar.gz
+
