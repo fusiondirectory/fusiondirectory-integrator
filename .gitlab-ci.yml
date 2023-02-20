@@ -47,6 +47,7 @@ build-tarballs:
   only:
     - main
   script:
+    - test -d ../fusiondirectory-integrator/ && rm -Rf ../fusiondirectory-integrator/
     - mkdir ../fusiondirectory-integrator/
     - mv ./* ../fusiondirectory-integrator/
     - mv  ../fusiondirectory-integrator/ ./
