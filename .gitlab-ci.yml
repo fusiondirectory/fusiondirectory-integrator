@@ -47,13 +47,13 @@ build-tarballs:
   only:
     - main
   script:
-    - mkdir ../fusiondirectory-integrator/
-    - mv ./* ../fusiondirectory-integrator/
-    - mv  ../fusiondirectory-integrator/ ./
-    - tar -cvzf fusiondirectory-integrator.tar.gz *
+    - mkdir ../fusiondirectory-integrator-$VERSION/
+    - mv ./* ../fusiondirectory-integrator-$VERSION/
+    - mv  ../fusiondirectory-integrator-$VERSION/ ./
+    - tar -cvzf fusiondirectory-integrator-$VERSION.tar.gz *
   artifacts:
     paths:
-      - fusiondirectory-integrator.tar.gz
+      - fusiondirectory-integrator-$VERSION.tar.gz
     expire_in: 30d
 
 build-release:
