@@ -17,7 +17,7 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
-*/
+ */
 
 namespace FusionDirectory\Cli;
 
@@ -47,9 +47,9 @@ class Application
   }
 
   /**
-  * Show the usage information and exits
-  * @param array<string> $argv
-  */
+   * Show the usage information and exits
+   * @param array<string> $argv
+   */
   protected function usage (array $argv): void
   {
     echo 'Usage: '.$argv[0].' --'.str_replace(':', ' VALUE', implode(' --', array_keys($this->options))).' '.strtoupper(implode(' ', array_keys($this->args)))."\n\n";
@@ -279,7 +279,11 @@ class Application
    */
   protected function verbose (): bool
   {
-    return ($this->getopt['verbose'] > 0);
+    if (isset($this->getopt['verbose']) && !empty($this->getopt['verbose'])) {
+      return ($this->getopt['verbose'] > 0);
+    }
+
+    return FALSE;
   }
 
   /**
