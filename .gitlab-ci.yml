@@ -62,11 +62,11 @@ build-release:
   only:
     - tags
   script:
-    - mkdir ../fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"')/
-    - mv ./* ../fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"')/
-    - mv  ../fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"')/ ./
-    - tar -cvzf fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"').tar.gz *
+    - mkdir ../fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f4 | tr -d '"')/
+    - mv ./* ../fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f4 | tr -d '"')/
+    - mv  ../fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f4 | tr -d '"')/ ./
+    - tar -cvzf fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f4 | tr -d '"').tar.gz *
   artifacts:
     paths:
-      - fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f3 | tr -d '"').tar.gz
+      - fusiondirectory-integrator-$(grep '%' Changelog.md | head -n1 | cut -d ' ' -f4 | tr -d '"').tar.gz
 
