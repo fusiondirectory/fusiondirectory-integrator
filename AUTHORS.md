@@ -6,8 +6,7 @@ contributed to the FusionDirectory Integrator project, beeing code, translations
 documentation and additional help.
 
   
-* Bernigaud Côme come.bernigaud@laposte.net
+* Chilliet Côme <come.chilliet@fusiondirectory.org>
   CLI and LDAP classes.
 * Thibault Dockx <thibault.dockx@fusiondirectory.org>
   Autoloader, Application. 
-	
