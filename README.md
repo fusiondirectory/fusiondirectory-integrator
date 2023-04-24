@@ -1,6 +1,6 @@
 # FusionDirectory Integrator
 
-FusionDirectory Integrator provides all the required library in order for FusionDirectory Tools to operate properly.
+FusionDirectory Integrator is a base set of library used to create console tools and in the future the base of our toolkit to create new software around FusionDirectory
 
 ## Features
 
