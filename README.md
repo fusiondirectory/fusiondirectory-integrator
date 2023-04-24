@@ -6,6 +6,7 @@ FusionDirectory Integrator provides all the required library in order for Fusion
 
 * Allows interaction with LDAP.
 * Allows interaction with FusionDirectory configuration. 
+* Allows FusionDirectory Orchestrator to operate its "tasks" system efficiently.
 
 ## Installation and upgrade of FusionDirectory integrator
 
@@ -15,7 +16,7 @@ Installation is automatic during the installation of FusionDirectory Core.
 
 ### Community support
 
-There are a couple ways you can try [to get help][get help].You can also join the `#fusiondirectory` IRC channel at libera.chat.
+There are a couple ways you can try [to get help][get help].
 
 ### Professional support
 
@@ -32,16 +33,6 @@ as well as technical help and support.
 Choose the plan that's right for you. Our subscriptions are flexible and scalable according to your needs
 
 The subscription period is one year from the date of purchase and gives you access to the extensive infrastructure of enterprise-class software and services.
-
-## IRC Etiquette
-
-* If we don't answer right away then just hang out in the channel.  Someone will
-  eventually write back to you as it just means we are away from keyboard,
-  working on something else, or in a different timezone than you.
-
-* You should treat IRC as what it is: asynchronous chat.  Sure the messages can
-  be instant but in most channels people are in different time zones.  At times
-  chat replies can be in excess of 24hrs.
 
 ### Best practice badge
 
