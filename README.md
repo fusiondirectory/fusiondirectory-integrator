@@ -8,10 +8,6 @@ FusionDirectory Integrator is a base set of library used to create console tools
 * Allows interaction with FusionDirectory configuration. 
 * Allows FusionDirectory Orchestrator to operate its "tasks" system efficiently.
 
-## Installation and upgrade of FusionDirectory integrator
-
-Installation is automatic during the installation of FusionDirectory Core.
-
 ## Get help
 
 ### Community support
