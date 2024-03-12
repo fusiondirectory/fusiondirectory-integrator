@@ -2,8 +2,8 @@
 
 class WebServiceCall
 {
-  private string $URL, $method, $token;
-  private array $data, $authData;
+  private $URL, $method, $token; //String
+  private $data, $authData; //Array
   /**
    * @var false|resource
    */
