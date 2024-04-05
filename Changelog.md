@@ -1,3 +1,10 @@
+## %"FusionDirectory Integrator 1.1" - 2024-04-05
+
+### Added
+
+#### fusiondirectory-integrator
+- fusiondirectory-integrator#26 [Rest] - import library WebServiceCall from fusiondirectory-orchestrator
+
 ## %"FusionDirectory Integrator 1.0" - 2023-04-24
 
 ### Added
