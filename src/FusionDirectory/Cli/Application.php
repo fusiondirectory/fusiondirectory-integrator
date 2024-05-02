@@ -28,19 +28,19 @@ class Application
 {
   /**
    * @var array<string,array>
-   * Options this application supports. Should be filled in constructor.
+   * Options this application supports. Should be filled in constructor's child.
    */
-  protected $options  = [];
+  protected $options = [];
   /**
    * @var array<string,array>
-   * Arguments this application supports. Should be filled in constructor.
+   * Arguments this application supports. Should be filled in constructor's child.
    */
-  protected $args     = [];
+  protected $args = [];
   /**
    * @var array<string,mixed>
-   * Result of options parsing
+   * Result of options parsing.
    */
-  protected $getopt   = [];
+  protected $getopt = [];
 
   public function __construct ()
   {
@@ -52,13 +52,16 @@ class Application
    */
   protected function usage (array $argv): void
   {
-    echo 'Usage: '.$argv[0].' --'.str_replace(':', ' VALUE', implode(' --', array_keys($this->options))).' '.strtoupper(implode(' ', array_keys($this->args)))."\n\n";
+    echo 'Usage: ' . $argv[0] . ' --' . str_replace(':', ' VALUE', implode(' --', array_keys($this->options))) . ' ' . strtoupper(implode(' ', array_keys($this->args))) . "\n\n";
+
     foreach ($this->options as $opt => $infos) {
-      printf("\t--%-25s\t%s\n", $opt.(isset($infos['short']) ? ', -'.$infos['short'] : ''), $infos['help']);
+      printf("\t--%-25s\t%s\n", $opt . (isset($infos['short']) ? ', -' . $infos['short'] : ''), $infos['help']);
     }
+
     foreach ($this->args as $arg => $infos) {
       printf("\t%-25s:\t%s\n", strtoupper($arg), $infos['help']);
     }
+
     exit(1);
   }
 
@@ -87,21 +90,13 @@ class Application
     unset($infos);
   }
 
-  /**
-   * Parse options and arguments from $argv
-   * @param array<string> $argv
-   *
-   * @return array<string,mixed>
-   */
-  protected function parseOptionsAndArgs (array $argv): array
+  protected function generateShortOptions (): string
   {
-    /* Parse options */
-    $shortOptions = implode('', array_map(
-      function (string $key, array $infos): string
-      {
+    return implode('', array_map(
+      function (string $key, array $infos): string {
         if (isset($infos['short'])) {
           if (substr($key, -1) === ':') {
-            return $infos['short'].':';
+            return $infos['short'] . ':';
           } else {
             return $infos['short'];
           }
@@ -112,68 +107,100 @@ class Application
       array_keys($this->options),
       array_values($this->options)
     ));
+  }
+
+  /**
+   * Parse options and arguments from $argv
+   * @param array<string> $argv
+   *
+   * @return array<string,mixed>
+   */
+  protected function parseOptionsAndArgs (array $argv): array
+  {
+    /* Parse options */
+    $shortOptions = $this->generateShortOptions();
+
     $getopt = getopt($shortOptions, array_keys($this->options), $optind);
+
     for ($i = 0; $i < $optind; $i++) {
+
       if (($argv[$i][0] === '-') && ($argv[$i] !== '--')) {
         if (preg_match('/^--(.+)$/', $argv[$i], $m)) {
-          if (!isset($this->options[$m[1]]) && !isset($this->options[$m[1].':'])) {
-            echo 'Unrecognized option '.$argv[$i]."\n";
+          if (!isset($this->options[$m[1]]) && !isset($this->options[$m[1] . ':'])) {
+
+            echo 'Unrecognized option ' . $argv[$i] . "\n";
             $this->usage($argv);
           }
         } elseif (preg_match('/^-(.+)$/', $argv[$i], $m)) {
           $shorts = str_split($m[1]);
+
           foreach ($shorts as $short) {
             if (strpos($shortOptions, $short) === FALSE) {
-              echo 'Unrecognized option -'.$short."\n";
+              echo 'Unrecognized option -' . $short . "\n";
+
               $this->usage($argv);
             }
           }
         } else {
-          echo 'Failed to parse option '.$argv[$i]."\n";
+          echo 'Failed to parse option ' . $argv[$i] . "\n";
+
           $this->usage($argv);
         }
       }
     }
+
     foreach ($this->options as $key => $option) {
       if (substr($key, -1) !== ':') {
         if (isset($getopt[$key])) {
           if (is_array($getopt[$key])) {
+
             $getopt[$key] = count($getopt[$key]);
           } else {
+
             $getopt[$key] = 1;
           }
         } else {
+
           $getopt[$key] = 0;
         }
         if (isset($option['short']) && isset($getopt[$option['short']])) {
           if (is_array($getopt[$option['short']])) {
+
             $getopt[$key] += count($getopt[$option['short']]);
           } else {
+
             $getopt[$key]++;
           }
           unset($getopt[$option['short']]);
         }
       } else {
         $key = substr($key, 0, -1);
+
         if (isset($option['short']) && isset($getopt[$option['short']])) {
           if (!isset($getopt[$key])) {
+
             $getopt[$key] = $getopt[$option['short']];
           } else {
+
             if (is_string($getopt[$key])) {
               $getopt[$key] = [$getopt[$key]];
             }
+
             if (is_array($getopt[$option['short']])) {
               $getopt[$key] = array_merge($getopt[$key], $getopt[$option['short']]);
             } else {
+
               $getopt[$key][] = $getopt[$option['short']];
             }
           }
         }
       }
       if (isset($getopt[$key])) {
+
         if (is_string($getopt[$key])) {
           $getopt[$key] = [$getopt[$key]];
         }
+
         if (isset($option['handler'])) {
           $getopt[$key] = $option['handler']($getopt[$key]);
         }
@@ -193,9 +220,11 @@ class Application
   {
     foreach ($this->getopt as $key => $value) {
       if (isset($this->options[$key]['command']) && ($value > 0)) {
+
         call_user_func([$this, $this->options[$key]['command']]);
-      } elseif (isset($this->options[$key.':']['command'])) {
-        call_user_func([$this, $this->options[$key.':']['command']], $value);
+      } elseif (isset($this->options[$key . ':']['command'])) {
+
+        call_user_func([$this, $this->options[$key . ':']['command']], $value);
       }
     }
   }
@@ -230,10 +259,10 @@ class Application
       /* Remove the \n at the end of $input */
       $line = trim($line);
 
-      if (in_array(strtolower($line), ['yes','y'])) {
+      if (in_array(strtolower($line), ['yes', 'y'])) {
         $return = TRUE;
         break;
-      } elseif (in_array(strtolower($line), ['no','n'])) {
+      } elseif (in_array(strtolower($line), ['no', 'n'])) {
         $return = FALSE;
         break;
       }
@@ -249,7 +278,7 @@ class Application
     if ($defaultAnswer != '') {
       $thingToAsk .= " [$defaultAnswer]";
     }
-    echo $thingToAsk.":\n";
+    echo $thingToAsk . ":\n";
 
     if ($hidden) {
       /* FIXME maybe find a better way */
