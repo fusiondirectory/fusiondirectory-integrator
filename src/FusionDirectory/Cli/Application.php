@@ -71,6 +71,7 @@ class Application
    */
   protected function parseArgs (array $argv, int $optind): void
   {
+    //
     if ((count($argv) - $optind) != count($this->args)) {
       $this->usage($argv);
     }
@@ -90,6 +91,11 @@ class Application
     unset($infos);
   }
 
+  /**
+   * @return string
+   * Note : This method is used to format the available options in children applications.
+   * This class is responsible to output the helpers info and thus receive options from children.
+   */
   protected function generateShortOptions (): string
   {
     return implode('', array_map(
@@ -117,11 +123,15 @@ class Application
    */
   protected function parseOptionsAndArgs (array $argv): array
   {
-    /* Parse options */
+
+    // Parse into a short format, options received by children applications.
     $shortOptions = $this->generateShortOptions();
 
+    // using getopt php method to get all verified and proper values passed to the script within getopt variable.
     $getopt = getopt($shortOptions, array_keys($this->options), $optind);
 
+    // Below is the verification of passed options / argv to the scripts that are potentially wrong and return the wrong
+    // options / args not existing.
     for ($i = 0; $i < $optind; $i++) {
 
       if (($argv[$i][0] === '-') && ($argv[$i] !== '--')) {
