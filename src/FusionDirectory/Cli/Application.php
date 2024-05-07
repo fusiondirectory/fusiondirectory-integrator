@@ -116,22 +116,13 @@ class Application
   }
 
   /**
-   * Parse options and arguments from $argv
-   * @param array<string> $argv
-   *
-   * @return array<string,mixed>
+   * @param $optind
+   * @param $argv
+   * @return void
+   * Note : Simply output usage if required after verifying existing options and passed arguments.
    */
-  protected function parseOptionsAndArgs (array $argv): array
+  protected function verificationOfArgumentsPassed ($optind, $argv) : void
   {
-
-    // Parse into a short format, options received by children applications.
-    $shortOptions = $this->generateShortOptions();
-
-    // using getopt php method to get all verified and proper values passed to the script within getopt variable.
-    $getopt = getopt($shortOptions, array_keys($this->options), $optind);
-
-    // Below is the verification of passed options / argv to the scripts that are potentially wrong and return the wrong
-    // options / args not existing.
     for ($i = 0; $i < $optind; $i++) {
 
       if (($argv[$i][0] === '-') && ($argv[$i] !== '--')) {
@@ -158,6 +149,25 @@ class Application
         }
       }
     }
+  }
+
+  /**
+   * Parse options and arguments from $argv
+   * @param array<string> $argv
+   *
+   * @return array<string,mixed>
+   */
+  protected function parseOptionsAndArgs (array $argv): array
+  {
+
+    // Parse into a short format, options received by children applications.
+    $shortOptions = $this->generateShortOptions();
+
+    // using getopt method, arguments passed are matched to existing preset long/short options.
+    $getopt = getopt($shortOptions, array_keys($this->options), $optind);
+
+    // getopt does not return wrong arguments passed, therefore below verification allows to indicate it.
+    $this->verificationOfArgumentsPassed($optind, $argv);
 
     foreach ($this->options as $key => $option) {
       if (substr($key, -1) !== ':') {
