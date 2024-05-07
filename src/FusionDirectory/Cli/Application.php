@@ -119,9 +119,10 @@ class Application
    * @param $optind
    * @param $argv
    * @return void
-   * Note : Simply output usage if required after verifying existing options and passed arguments.
+   * Note : Simply output usage if required after verifying existing potential invalid arguments
+   * Receive option index (returned by getopt method) and the arguments passed to the script.
    */
-  protected function verificationOfArgumentsPassed ($optind, $argv) : void
+  protected function verifyArguments ($optind, $argv, $shortOptions): void
   {
     for ($i = 0; $i < $optind; $i++) {
 
@@ -152,6 +153,93 @@ class Application
   }
 
   /**
+   * @param $key
+   * @param $option
+   * @param $getopt
+   * @return void
+   */
+  private function handleShortOptions ($key, $option, &$getopt) : void
+  {
+    if (isset($option['short']) && isset($getopt[$option['short']])) {
+      if (is_array($getopt[$option['short']])) {
+        $getopt[$key] += count($getopt[$option['short']]);
+
+      } else {
+        $getopt[$key]++;
+      }
+
+      unset($getopt[$option['short']]);
+    }
+  }
+
+  private function processNonValueOption ($key, $option, &$getopt): void
+  {
+    if (!isset($getopt[$key])) {
+      $getopt[$key] = 0;
+    } elseif (is_array($getopt[$key])) {
+      $getopt[$key] = count($getopt[$key]);
+    } else {
+      $getopt[$key] = 1;
+    }
+
+    // Simply handle the short options
+    $this->handleShortOptions($key, $option, $getopt);
+  }
+
+  private function processValueOption ($key, $option, &$getopt): void
+  {
+    $key = substr($key, 0, -1);
+
+    // Simply handle short option with value below
+    if (isset($option['short']) && isset($getopt[$option['short']])) {
+      if (!isset($getopt[$key])) {
+
+        $getopt[$key] = $getopt[$option['short']];
+      } else {
+
+        if (is_string($getopt[$key])) {
+          $getopt[$key] = [$getopt[$key]];
+        }
+
+        if (is_array($getopt[$option['short']])) {
+          $getopt[$key] = array_merge($getopt[$key], $getopt[$option['short']]);
+        } else {
+
+          $getopt[$key][] = $getopt[$option['short']];
+        }
+      }
+    }
+  }
+
+  /**
+   * @param $key
+   * @param $option
+   * @param $getopt
+   * @return void
+   * Note: We are putting a numerical value on arguments allowing better error handling.
+   * Note 2: getopt is passed by reference. Keep this function private.
+   */
+  private function processOptions ($key, $option, &$getopt): void
+  {
+    if (substr($key, -1) !== ':') {
+      // Process non-value options (No added path or file or options to the arguments set).
+      $this->processNonValueOption($key, $option, $getopt);
+    } else {
+      // Process value options (argument provided + data).
+      $this->processValueOption($key, $option, $getopt);
+    }
+
+    if (isset($getopt[$key])) {
+      if (is_string($getopt[$key])) {
+        $getopt[$key] = [$getopt[$key]];
+      }
+      if (isset($option['handler'])) {
+        $getopt[$key] = $option['handler']($getopt[$key]);
+      }
+    }
+  }
+
+  /**
    * Parse options and arguments from $argv
    * @param array<string> $argv
    *
@@ -167,64 +255,11 @@ class Application
     $getopt = getopt($shortOptions, array_keys($this->options), $optind);
 
     // getopt does not return wrong arguments passed, therefore below verification allows to indicate it.
-    $this->verificationOfArgumentsPassed($optind, $argv);
+    $this->verifyArguments($optind, $argv, $shortOptions);
 
     foreach ($this->options as $key => $option) {
-      if (substr($key, -1) !== ':') {
-        if (isset($getopt[$key])) {
-          if (is_array($getopt[$key])) {
-
-            $getopt[$key] = count($getopt[$key]);
-          } else {
-
-            $getopt[$key] = 1;
-          }
-        } else {
-
-          $getopt[$key] = 0;
-        }
-        if (isset($option['short']) && isset($getopt[$option['short']])) {
-          if (is_array($getopt[$option['short']])) {
-
-            $getopt[$key] += count($getopt[$option['short']]);
-          } else {
-
-            $getopt[$key]++;
-          }
-          unset($getopt[$option['short']]);
-        }
-      } else {
-        $key = substr($key, 0, -1);
-
-        if (isset($option['short']) && isset($getopt[$option['short']])) {
-          if (!isset($getopt[$key])) {
-
-            $getopt[$key] = $getopt[$option['short']];
-          } else {
-
-            if (is_string($getopt[$key])) {
-              $getopt[$key] = [$getopt[$key]];
-            }
-
-            if (is_array($getopt[$option['short']])) {
-              $getopt[$key] = array_merge($getopt[$key], $getopt[$option['short']]);
-            } else {
-
-              $getopt[$key][] = $getopt[$option['short']];
-            }
-          }
-        }
-      }
-      if (isset($getopt[$key])) {
-
-        if (is_string($getopt[$key])) {
-          $getopt[$key] = [$getopt[$key]];
-        }
-
-        if (isset($option['handler'])) {
-          $getopt[$key] = $option['handler']($getopt[$key]);
-        }
-      }
+      // process each options retrieved by getopt
+      $this->processOptions($key, $option, $getopt);
     }
 
     /* Parse arguments */
