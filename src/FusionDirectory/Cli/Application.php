@@ -66,12 +66,13 @@ class Application
   }
 
   /**
-   * Parse arguments
-   * @param array<string> $argv
+   * @param array $argv
+   * @param int $optind
+   * @return void
    */
   protected function parseArgs (array $argv, int $optind): void
   {
-    //
+    // optind comes from setopt method, counting the matches in existing options and arguments passed. If not equals, print usage.
     if ((count($argv) - $optind) != count($this->args)) {
       $this->usage($argv);
     }
@@ -93,7 +94,7 @@ class Application
 
   /**
    * @return string
-   * Note : This method is used to format the available options in children applications.
+   * Note : This method is used to format the available options in children applications. Create short formats.
    * This class is responsible to output the helpers info and thus receive options from children.
    */
   protected function generateShortOptions (): string
@@ -157,6 +158,8 @@ class Application
    * @param $option
    * @param $getopt
    * @return void
+   * Logic is that every options that are matched by an arguments will have an incremental int increased from zero.
+   * This allows to have a final array of arguments (validated) on which we can work on to execute related functions.
    */
   private function handleShortOptions ($key, $option, &$getopt) : void
   {
@@ -172,6 +175,13 @@ class Application
     }
   }
 
+  /**
+   * @param $key
+   * @param $option
+   * @param $getopt
+   * @return void
+   * Note : This method, like the handleShortOptions - incremented the integer. Arguments requiring data.
+   */
   private function processNonValueOption ($key, $option, &$getopt): void
   {
     if (!isset($getopt[$key])) {
@@ -186,6 +196,13 @@ class Application
     $this->handleShortOptions($key, $option, $getopt);
   }
 
+  /**
+   * @param $key
+   * @param $option
+   * @param $getopt
+   * @return void
+   * Note : Method which process arguments requiring data input. (See processNonValueOption for non data arguments).
+   */
   private function processValueOption ($key, $option, &$getopt): void
   {
     $key = substr($key, 0, -1);
@@ -240,10 +257,10 @@ class Application
   }
 
   /**
-   * Parse options and arguments from $argv
-   * @param array<string> $argv
-   *
-   * @return array<string,mixed>
+   * @param array $argv
+   * @return array
+   * Note : This is the main method to verify arguments passed and generated a final array which summarize valid arguments
+   * passed.
    */
   protected function parseOptionsAndArgs (array $argv): array
   {
