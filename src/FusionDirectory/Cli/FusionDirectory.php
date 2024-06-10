@@ -22,6 +22,7 @@
 namespace FusionDirectory\Cli;
 
 use Exception;
+use SimpleXMLElement;
 use SodiumException;
 
 /**
@@ -45,9 +46,11 @@ class FusionDirectory extends Application
     parent::__construct();
 
     // Variables to be set during script calling.
-    $this->vars[] = [
+    $this->vars = [
       'fd_home'       => '/usr/share/fusiondirectory',
       'fd_config_dir' => '/etc/fusiondirectory',
+      'config_file'   => 'fusiondirectory.conf',
+      'secrets_file'  => 'fusiondirectory.secrets',
     ];
   }
 
