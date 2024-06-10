@@ -35,12 +35,12 @@ class Application
    * @var array<string,array>
    * Arguments this application supports. Should be filled in constructor's child.
    */
-  protected $args = [];
+  protected array $args = [];
   /**
    * @var array<string,mixed>
    * Result of options parsing.
    */
-  protected $getopt = [];
+  protected array $getopt = [];
 
   public function __construct ()
   {
@@ -79,7 +79,7 @@ class Application
 
     $argv = array_slice($argv, $optind);
 
-    foreach ($this->args as $arg => &$infos) {
+    foreach ($this->args as &$infos) {
       if ($infos['handler'] == '…') {
         /* All the last args */
         $infos['value'] = $argv;
@@ -119,6 +119,7 @@ class Application
   /**
    * @param $optind
    * @param $argv
+   * @param $shortOptions
    * @return void
    * Note : Simply output usage if required after verifying existing potential invalid arguments
    * Receive option index (returned by getopt method) and the arguments passed to the script.
@@ -303,7 +304,7 @@ class Application
 
   /**
    * Main function.
-   * By default only parse options and arguments, and print help if needed.
+   * By default, only parse options and arguments, and print help if needed.
    * Extend if you want to call runCommands.
    * @param array<string> $argv
    */

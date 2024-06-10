@@ -1,9 +1,10 @@
 <?php
 
+namespace FusionDirectory\Rest;
 class WebServiceCall
 {
   private $URL, $method, $token; //String
-  private $data, $authData; //Array
+  private                $data, $authData; //Array
   /**
    * @var false|resource
    */
