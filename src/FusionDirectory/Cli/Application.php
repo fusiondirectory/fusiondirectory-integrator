@@ -162,7 +162,7 @@ class Application
    * Logic is that every options that are matched by an arguments will have an incremental int increased from zero.
    * This allows to have a final array of arguments (validated) on which we can work on to execute related functions.
    */
-  private function handleShortOptions ($key, $option, &$getopt) : void
+  private function handleShortOptions ($key, $option, &$getopt): void
   {
     if (isset($option['short']) && isset($getopt[$option['short']])) {
       if (is_array($getopt[$option['short']])) {

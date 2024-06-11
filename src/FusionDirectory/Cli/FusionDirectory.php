@@ -47,10 +47,19 @@ class FusionDirectory extends Application
 
     // Variables to be set during script calling.
     $this->vars = [
-      'fd_home'       => '/usr/share/fusiondirectory',
-      'fd_config_dir' => '/etc/fusiondirectory',
-      'config_file'   => 'fusiondirectory.conf',
-      'secrets_file'  => 'fusiondirectory.secrets',
+      'fd_home'          => '/usr/share/fusiondirectory',
+      'fd_config_dir'    => '/etc/fusiondirectory',
+      'config_file'      => 'fusiondirectory.conf',
+      'secrets_file'     => 'fusiondirectory.secrets',
+      'fd_cache'         => '/var/cache/fusiondirectory',
+      'fd_smarty_path'   => '/usr/share/php/smarty3/Smarty.class.php',
+      'fd_spool_dir'     => '/var/spool/fusiondirectory',
+      'locale_dir'       => 'locale',
+      'class_cache'      => 'class.cache',
+      'locale_cache_dir' => 'locale',
+      'tmp_dir'          => 'tmp',
+      'fai_log_dir'      => 'fai',
+      'template_dir'     => 'template'
     ];
   }
 
@@ -64,7 +73,7 @@ class FusionDirectory extends Application
         'help'    => 'List possible vars to give --set-var',
         'command' => 'cmdListVars',
       ],
-      'set-var:' => [
+      'set-var:'  => [
         'help'    => 'Set the variable value',
         'command' => 'cmdSetVar',
       ],
@@ -78,21 +87,21 @@ class FusionDirectory extends Application
   protected function readFusionDirectoryVariablesFile (): void
   {
     if ($this->verbose()) {
-      printf('Reading vars from %s'."\n", $this->vars['fd_home'].'/include/variables.inc');
+      printf('Reading vars from %s' . "\n", $this->vars['fd_home'] . '/include/variables.inc');
     }
-    require_once($this->vars['fd_home'].'/include/variables.inc');
+    require_once($this->vars['fd_home'] . '/include/variables.inc');
 
-    $fd_cache = $this->removeFinalSlash(CACHE_DIR);
+    $fd_cache  = $this->removeFinalSlash(CACHE_DIR);
     $varsToSet = [
       'fd_config_dir'    => $this->removeFinalSlash(CONFIG_DIR),
       'config_file'      => $this->removeFinalSlash(CONFIG_FILE),
       'fd_smarty_path'   => $this->removeFinalSlash(SMARTY),
       'fd_spool_dir'     => $this->removeFinalSlash(SPOOL_DIR),
       'fd_cache'         => $fd_cache,
-      'locale_cache_dir' => $this->removeFinalSlash(str_replace($fd_cache.'/', '', LOCALE_DIR)),
-      'tmp_dir'          => $this->removeFinalSlash(str_replace($fd_cache.'/', '', TEMP_DIR)),
-      'template_dir'     => $this->removeFinalSlash(str_replace($fd_cache.'/', '', CONFIG_TEMPLATE_DIR)),
-      'fai_log_dir'      => $this->removeFinalSlash(str_replace($fd_cache.'/', '', FAI_LOG_DIR)),
+      'locale_cache_dir' => $this->removeFinalSlash(str_replace($fd_cache . '/', '', LOCALE_DIR)),
+      'tmp_dir'          => $this->removeFinalSlash(str_replace($fd_cache . '/', '', TEMP_DIR)),
+      'template_dir'     => $this->removeFinalSlash(str_replace($fd_cache . '/', '', CONFIG_TEMPLATE_DIR)),
+      'fai_log_dir'      => $this->removeFinalSlash(str_replace($fd_cache . '/', '', FAI_LOG_DIR)),
       'class_cache'      => $this->removeFinalSlash(CLASS_CACHE),
     ];
     foreach ($varsToSet as $var => $value) {
@@ -123,16 +132,16 @@ class FusionDirectory extends Application
         if (isset($this->vars[strtolower($m[1])])) {
           $varsToSet[strtolower($m[1])] = $m[2];
         } else {
-          throw new Exception('Var "'.$m[1].'" does not exists. Use --list-vars to get the list of vars.');
+          throw new Exception('Var "' . $m[1] . '" does not exists. Use --list-vars to get the list of vars.');
         }
       } else {
-        throw new Exception('Incorrect syntax for --set-var: "'.$var.'". Use var=value');
+        throw new Exception('Incorrect syntax for --set-var: "' . $var . '". Use var=value');
       }
     }
 
     if (isset($varsToSet['fd_home'])) {
       if ($this->verbose()) {
-        printf('Setting var %s to "%s"'."\n", 'fd_home', $this->removeFinalSlash($varsToSet['fd_home']));
+        printf('Setting var %s to "%s"' . "\n", 'fd_home', $this->removeFinalSlash($varsToSet['fd_home']));
       }
       $this->vars['fd_home'] = $this->removeFinalSlash($varsToSet['fd_home']);
     }
@@ -140,7 +149,7 @@ class FusionDirectory extends Application
     unset($varsToSet['fd_home']);
     foreach ($varsToSet as $var => $value) {
       if ($this->verbose()) {
-        printf('Setting var %s to "%s"'."\n", $var, $value);
+        printf('Setting var %s to "%s"' . "\n", $var, $value);
       }
       $this->vars[$var] = $value;
     }
@@ -155,17 +164,17 @@ class FusionDirectory extends Application
   protected function loadFusionDirectoryConfigurationFile (): array
   {
     if ($this->verbose()) {
-      printf('Loading configuration file from %s'."\n", $this->configFilePath);
+      printf('Loading configuration file from %s' . "\n", $this->configFilePath);
     }
 
     $secret = NULL;
     if (file_exists($this->secretsFilePath)) {
       if ($this->verbose()) {
-        printf('Using secrets file %s'."\n", $this->secretsFilePath);
+        printf('Using secrets file %s' . "\n", $this->secretsFilePath);
       }
       $lines = file($this->secretsFilePath, FILE_SKIP_EMPTY_LINES);
       if ($lines === FALSE) {
-        throw new Exception('Could not open "'.$this->secretsFilePath.'"');
+        throw new Exception('Could not open "' . $this->secretsFilePath . '"');
       }
       foreach ($lines as $line) {
         if (preg_match('/RequestHeader set FDKEY ([^ \n]+)\n/', $line, $m)) {
@@ -176,36 +185,36 @@ class FusionDirectory extends Application
     }
 
     // Note: this function is case sensitive with xml tags and attributes, FD is not
-    $xml = new SimpleXMLElement($this->configFilePath, 0, TRUE);
+    $xml       = new SimpleXMLElement($this->configFilePath, 0, TRUE);
     $locations = [];
     foreach ($xml->main->location as $loc) {
-      $ref = $loc->referral[0];
+      $ref      = $loc->referral[0];
       $location = [
-        'tls'       => (isset($loc['ldapTLS']) && (strcasecmp((string)$loc['ldapTLS'], 'TRUE') === 0)),
-        'uri'       => (string)$ref['URI'],
-        'base'      => (string)($ref['base'] ?? $loc['base'] ?? '' ),
-        'bind_dn'   => (string)$ref['adminDn'],
-        'bind_pwd'  => (string)$ref['adminPassword'],
+        'tls'      => (isset($loc['ldapTLS']) && (strcasecmp((string)$loc['ldapTLS'], 'TRUE') === 0)),
+        'uri'      => (string)$ref['URI'],
+        'base'     => (string)($ref['base'] ?? $loc['base'] ?? ''),
+        'bind_dn'  => (string)$ref['adminDn'],
+        'bind_pwd' => (string)$ref['adminPassword'],
       ];
       if ($location['base'] === '') {
         if (preg_match('|^(.*)/([^/]+)$|', $location['uri'], $m)) {
           /* Format from FD<1.3 */
-          $location['uri']   = $m[1];
-          $location['base']  = $m[2];
+          $location['uri']  = $m[1];
+          $location['base'] = $m[2];
         } else {
-          throw new Exception('"'.$location['uri'].'" does not contain any base!');
+          throw new Exception('"' . $location['uri'] . '" does not contain any base!');
         }
       }
       if ($secret !== NULL) {
         if (!class_exists('SecretBox')) {
           /* Temporary hack waiting for core namespace/autoload refactor */
-          require_once($this->vars['fd_home'].'/include/SecretBox.inc');
+          require_once($this->vars['fd_home'] . '/include/SecretBox.inc');
         }
         $location['bind_pwd'] = SecretBox::decrypt($location['bind_pwd'], $secret);
       }
       $locations[(string)$loc['name']] = $location;
       if ($this->verbose()) {
-        printf('Found location %s (%s)'."\n", (string)$loc['name'], $location['uri']);
+        printf('Found location %s (%s)' . "\n", (string)$loc['name'], $location['uri']);
       }
     }
     if (count($locations) < 1) {
