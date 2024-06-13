@@ -265,7 +265,6 @@ class Application
    */
   protected function parseOptionsAndArgs (array $argv): array
   {
-
     // Parse into a short format, options received by children applications.
     $shortOptions = $this->generateShortOptions();
 
