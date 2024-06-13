@@ -39,15 +39,15 @@ class LdapApplication extends FusionDirectory
    */
   protected string $base;
 
-//  /**
-//   * @var string path to the FusionDirectory configuration file
-//   */
-//  protected string $configFilePath;
+  //  /**
+  //   * @var string path to the FusionDirectory configuration file
+  //   */
+  //  protected string $configFilePath;
 
-//  /**
-//   * @var string path to the FusionDirectory secrets file containing the key to decrypt passwords
-//   */
-//  protected string $secretsFilePath;
+  //  /**
+  //   * @var string path to the FusionDirectory secrets file containing the key to decrypt passwords
+  //   */
+  //  protected string $secretsFilePath;
 
   /**
    * May not be needed once SecretBox situation clears up
@@ -59,36 +59,36 @@ class LdapApplication extends FusionDirectory
   {
     parent::__construct();
 
-    $this->options  = [
-      'ldapuri:'  => [
-        'help'        => 'URI to connect to, defaults to configuration file value',
+    $this->options = [
+      'ldapuri:'     => [
+        'help' => 'URI to connect to, defaults to configuration file value',
       ],
-      'binddn:'  => [
-        'help'        => 'DN to bind with, defaults to configuration file value',
+      'binddn:'      => [
+        'help' => 'DN to bind with, defaults to configuration file value',
       ],
-      'bindpwd:'  => [
-        'help'        => 'Password to bind with, defaults to configuration file value',
+      'bindpwd:'     => [
+        'help' => 'Password to bind with, defaults to configuration file value',
       ],
-      'saslmech:'  => [
-        'help'        => 'SASL mech, activates SASL if specified',
+      'saslmech:'    => [
+        'help' => 'SASL mech, activates SASL if specified',
       ],
-      'saslrealm:'  => [
-        'help'        => 'SASL realm',
+      'saslrealm:'   => [
+        'help' => 'SASL realm',
       ],
-      'saslauthcid:'  => [
-        'help'        => 'SASL authcid',
+      'saslauthcid:' => [
+        'help' => 'SASL authcid',
       ],
-      'saslauthzid:'  => [
-        'help'        => 'SASL authzid',
+      'saslauthzid:' => [
+        'help' => 'SASL authzid',
       ],
-      'yes'           => [
-        'help'        => 'Answer yes to all questions',
+      'yes'          => [
+        'help' => 'Answer yes to all questions',
       ],
-      'verbose'       => [
-        'help'        => 'Verbose output',
+      'verbose'      => [
+        'help' => 'Verbose output',
       ],
-      'help'          => [
-        'help'        => 'Show this help',
+      'help'         => [
+        'help' => 'Show this help',
       ],
     ];
   }
@@ -105,11 +105,11 @@ class LdapApplication extends FusionDirectory
       return;
     }
 
-    $locations  = $this->loadFusionDirectoryConfigurationFile();
-    $location   = (string)key($locations);
+    $locations = $this->loadFusionDirectoryConfigurationFile();
+    $location  = (string)key($locations);
     if (count($locations) > 1) {
       /* Give the choice between locations to user */
-      $question = 'There are several locations in your config file, which one should be used: ('.implode(',', array_keys($locations)).')';
+      $question = 'There are several locations in your config file, which one should be used: (' . implode(',', array_keys($locations)) . ')';
       do {
         $answer = $this->askUserInput($question, $location);
       } while (!isset($locations[$answer]));
@@ -118,7 +118,7 @@ class LdapApplication extends FusionDirectory
     $config = $locations[$location];
 
     if ($this->verbose()) {
-      printf('Connecting to LDAP at %s'."\n", $this->getopt['ldapuri'][0] ?? $config['uri']);
+      printf('Connecting to LDAP at %s' . "\n", $this->getopt['ldapuri'][0] ?? $config['uri']);
     }
     $this->ldap = new Ldap\Link($this->getopt['ldapuri'][0] ?? $config['uri']);
     if (($this->getopt['saslmech'][0] ?? '') === '') {

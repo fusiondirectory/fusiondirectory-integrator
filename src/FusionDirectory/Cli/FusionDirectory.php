@@ -70,7 +70,7 @@ class FusionDirectory extends Application
   {
     return [
       'list-vars' => [
-        'help'    => 'List possible vars to give --set-var',
+        'help'    => 'List an example of a possible var to give to --set-var followed by --write-vars',
         'command' => 'cmdListVars',
       ],
       'set-var:'  => [
@@ -111,8 +111,10 @@ class FusionDirectory extends Application
     }
   }
 
+
   /**
-   * Output variables and their current values
+   * @return void
+   * Only print an example of variables that can be changed.
    */
   protected function cmdListVars (): void
   {
@@ -121,22 +123,26 @@ class FusionDirectory extends Application
     }
   }
 
+
   /**
+   * @param string $var
+   * @return void
    * @throws Exception
+   * Note : This allows to set var in the variables.php file in FD.
+   * This method needs rework as multiple variables are not received, only a string.
+   * (logic of multiple should be defined in parent class)
    */
-  protected function cmdSetVar (array $vars): void
+  protected function cmdSetVar (string $var): void
   {
     $varsToSet = [];
-    foreach ($vars as $var) {
-      if (preg_match('/^([^=]+)=(.+)$/', $var, $m)) {
-        if (isset($this->vars[strtolower($m[1])])) {
-          $varsToSet[strtolower($m[1])] = $m[2];
-        } else {
-          throw new Exception('Var "' . $m[1] . '" does not exists. Use --list-vars to get the list of vars.');
-        }
+    if (preg_match('/^([^=]+)=(.+)$/', $var, $m)) {
+      if (isset($this->vars[strtolower($m[1])])) {
+        $varsToSet[strtolower($m[1])] = $m[2];
       } else {
-        throw new Exception('Incorrect syntax for --set-var: "' . $var . '". Use var=value');
+        throw new Exception('Var "' . $m[1] . '" does not exists. Use --list-vars to get the list of vars.');
       }
+    } else {
+      throw new Exception('Incorrect syntax for --set-var: "' . $var . '". Use var=value');
     }
 
     if (isset($varsToSet['fd_home'])) {
@@ -206,10 +212,6 @@ class FusionDirectory extends Application
         }
       }
       if ($secret !== NULL) {
-        if (!class_exists('SecretBox')) {
-          /* Temporary hack waiting for core namespace/autoload refactor */
-          require_once($this->vars['fd_home'] . '/include/SecretBox.inc');
-        }
         $location['bind_pwd'] = SecretBox::decrypt($location['bind_pwd'], $secret);
       }
       $locations[(string)$loc['name']] = $location;
