@@ -117,14 +117,10 @@ class Application
   }
 
   /**
-   * @param $optind
-   * @param $argv
-   * @param $shortOptions
-   * @return void
-   * Note : Simply output usage if required after verifying existing potential invalid arguments
-   * Receive option index (returned by getopt method) and the arguments passed to the script.
+   *  Note : Simply output usage if required after verifying existing potential invalid arguments
+   *  Receive option index (returned by getopt method) and the arguments passed to the script
    */
-  protected function verifyArguments ($optind, $argv, $shortOptions): void
+  protected function verifyArguments ($optind, $argv, $shortOptions)
   {
     for ($i = 0; $i < $optind; $i++) {
 
@@ -155,9 +151,6 @@ class Application
   }
 
   /**
-   * @param $key
-   * @param $option
-   * @param $getopt
    * @return void
    * Logic is that every options that are matched by an arguments will have an incremental int increased from zero.
    * This allows to have a final array of arguments (validated) on which we can work on to execute related functions.
@@ -177,9 +170,6 @@ class Application
   }
 
   /**
-   * @param $key
-   * @param $option
-   * @param $getopt
    * @return void
    * Note : This method, like the handleShortOptions - incremented the integer. Arguments requiring data.
    */
@@ -198,9 +188,6 @@ class Application
   }
 
   /**
-   * @param $key
-   * @param $option
-   * @param $getopt
    * @return void
    * Note : Method which process arguments requiring data input. (See processNonValueOption for non data arguments).
    */
@@ -230,9 +217,6 @@ class Application
   }
 
   /**
-   * @param $key
-   * @param $option
-   * @param $getopt
    * @return void
    * Note: We are putting a numerical value on arguments allowing better error handling.
    * Note 2: getopt is passed by reference. Keep this function private.

@@ -55,7 +55,6 @@ class SecretBox
    * @param string $message - message to encrypt
    * @param string $secret_key - encryption key
    * @param int $block_size - pad the message by $block_size byte chunks to conceal encrypted data size. must match between encrypt/decrypt!
-   * @throws SodiumException|\Random\RandomException
    * @see https://github.com/jedisct1/libsodium/issues/392
    * @see decrypt()
    */
@@ -91,7 +90,7 @@ class SecretBox
   public static function decrypt (string $encrypted, string $secret_key, int $block_size = 1): string
   {
     /* Unpack base64 message */
-    $decoded = sodium_base642bin($encrypted, SODIUM_BASE64_VARIANT_ORIGINAL);
+    $decoded = sodium_base642bin($encrypted, SODIUM_BASE64_VARIANT_ORIGINAL, '');
 
     if (mb_strlen($decoded, '8bit') < (SODIUM_CRYPTO_SECRETBOX_NONCEBYTES + SODIUM_CRYPTO_SECRETBOX_MACBYTES)) {
       throw new Exception('The message was truncated');
