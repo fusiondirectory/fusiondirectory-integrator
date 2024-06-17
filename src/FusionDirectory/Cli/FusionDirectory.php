@@ -184,7 +184,7 @@ class FusionDirectory extends Application
       }
       foreach ($lines as $line) {
         if (preg_match('/RequestHeader set FDKEY ([^ \n]+)\n/', $line, $m)) {
-          $secret = sodium_base642bin($m[1], SODIUM_BASE64_VARIANT_ORIGINAL);
+          $secret = sodium_base642bin($m[1], SODIUM_BASE64_VARIANT_ORIGINAL, '');
           break;
         }
       }
