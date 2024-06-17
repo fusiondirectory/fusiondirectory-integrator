@@ -21,6 +21,18 @@
 
 namespace FusionDirectory\Cli;
 
+use Exception;
+use SodiumException;
+use function random_bytes;
+use function sodium_base642bin;
+use function sodium_bin2base64;
+use function sodium_crypto_secretbox;
+use function sodium_crypto_secretbox_keygen;
+use function sodium_crypto_secretbox_open;
+use function sodium_memzero;
+use function sodium_pad;
+use function sodium_unpad;
+
 class SecretBox
 {
   /**
@@ -32,7 +44,7 @@ class SecretBox
    */
   public static function generateSecretKey (): string
   {
-    return \sodium_crypto_secretbox_keygen();
+    return sodium_crypto_secretbox_keygen();
   }
 
   /**
@@ -43,23 +55,23 @@ class SecretBox
    * @param string $message - message to encrypt
    * @param string $secret_key - encryption key
    * @param int $block_size - pad the message by $block_size byte chunks to conceal encrypted data size. must match between encrypt/decrypt!
-   * @see decrypt()
    * @see https://github.com/jedisct1/libsodium/issues/392
+   * @see decrypt()
    */
   public static function encrypt (string $message, string $secret_key, int $block_size = 1): string
   {
     /* Create a nonce for this operation. it will be stored and recovered in the message itself */
-    $nonce = \random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
+    $nonce = random_bytes(SODIUM_CRYPTO_SECRETBOX_NONCEBYTES);
 
     /* Pad to $block_size byte chunks (enforce 512 byte limit) */
-    $padded_message = \sodium_pad($message, $block_size <= 512 ? $block_size : 512);
+    $padded_message = sodium_pad($message, min($block_size, 512));
 
     /* Encrypt message and combine with nonce */
-    $cipher = \sodium_bin2base64($nonce . \sodium_crypto_secretbox($padded_message, $nonce, $secret_key), SODIUM_BASE64_VARIANT_ORIGINAL);
+    $cipher = sodium_bin2base64($nonce . sodium_crypto_secretbox($padded_message, $nonce, $secret_key), SODIUM_BASE64_VARIANT_ORIGINAL);
 
     /* Cleanup */
-    \sodium_memzero($message);
-    \sodium_memzero($secret_key);
+    sodium_memzero($message);
+    sodium_memzero($secret_key);
 
     return $cipher;
   }
@@ -70,16 +82,18 @@ class SecretBox
    * Use libsodium to decrypt an encrypted string
    *
    * @param int $block_size - pad the message by $block_size byte chunks to conceal encrypted data size. must match between encrypt/decrypt!
-   * @see encrypt()
+   * @throws SodiumException
+   * @throws Exception
    * @see https://github.com/jedisct1/libsodium/issues/392
+   * @see encrypt()
    */
   public static function decrypt (string $encrypted, string $secret_key, int $block_size = 1): string
   {
     /* Unpack base64 message */
-    $decoded = \sodium_base642bin($encrypted, SODIUM_BASE64_VARIANT_ORIGINAL);
+    $decoded = sodium_base642bin($encrypted, SODIUM_BASE64_VARIANT_ORIGINAL, '');
 
     if (mb_strlen($decoded, '8bit') < (SODIUM_CRYPTO_SECRETBOX_NONCEBYTES + SODIUM_CRYPTO_SECRETBOX_MACBYTES)) {
-      throw new \Exception('The message was truncated');
+      throw new Exception('The message was truncated');
     }
 
     /* Pull nonce and ciphertext out of unpacked message */
@@ -87,18 +101,18 @@ class SecretBox
     $ciphertext = mb_substr($decoded, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES, NULL, '8bit');
 
     /* Decrypt it and account for extra padding from $block_size (enforce 512 byte limit) */
-    $decrypted_padded_message = \sodium_crypto_secretbox_open($ciphertext, $nonce, $secret_key);
+    $decrypted_padded_message = sodium_crypto_secretbox_open($ciphertext, $nonce, $secret_key);
 
     /* Check for encryption failures */
     if ($decrypted_padded_message === FALSE) {
-      throw new \Exception('The message was tampered with in transit');
+      throw new Exception('The message was tampered with in transit');
     }
 
-    $message = \sodium_unpad($decrypted_padded_message, $block_size <= 512 ? $block_size : 512);
+    $message = sodium_unpad($decrypted_padded_message, min($block_size, 512));
 
     /* Cleanup */
-    \sodium_memzero($encrypted);
-    \sodium_memzero($secret_key);
+    sodium_memzero($encrypted);
+    sodium_memzero($secret_key);
 
     return $message;
   }

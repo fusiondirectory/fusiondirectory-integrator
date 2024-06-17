@@ -1,5 +1,6 @@
 <?php
 
+namespace FusionDirectory\Rest;
 class WebServiceCall
 {
   private $URL, $method, $token; //String
