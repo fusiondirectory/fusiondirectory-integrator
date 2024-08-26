@@ -108,15 +108,12 @@ class AuditLib
       if ($interval->days >= $this->auditRetention) {
         // If greater, delete the DN audit entry, we reuse removeSubTask method from gateway and get ldap response.(bool).
 
-        if ($this->ldapBind->delete($record['dn'])) {
-          $result[$record['dn']] = 'audit removed';
-        } else {
-          $result[$record['dn']] = 'Error during audit deletion';
-        }
+        $result[$record['dn']]               = 'audit entry requiring deletion';
+        $result[$record['dn']]['ldapStatus'] = $this->ldapBind->delete($record['dn']);
 
       }
-    }
 
+    }
     return $result;
   }
 
@@ -126,7 +123,8 @@ class AuditLib
    * @throws Exception
    * Note : Simply take a generalized Ldap time (with UTC = Z) and transform it to php object dateTime.
    */
-  public function generalizeLdapTimeToPhpObject ($generalizeLdapDateTime)
+  public
+  function generalizeLdapTimeToPhpObject ($generalizeLdapDateTime)
   {
     // Extract the date part (first 8 characters: YYYYMMDD), we do not care about hour and seconds.
     $auditTimeFormatted = substr($generalizeLdapDateTime, 0, 8);
