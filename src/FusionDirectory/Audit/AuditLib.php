@@ -11,14 +11,21 @@ use FusionDirectory\Ldap;
 class AuditLib
 {
 
-  private string $subTaskDN, $subTaskCN;
-  private int                $auditRetention;
-  // Usage of CLI bool is to make sure we use proper method in case of direct CLI call. (Instead of Orchestrator).
-  private array     $auditList;
-  private Ldap\Link $ldapBind;
-  private object    $gateway;
+  private int        $auditRetention;
+  private ?string    $subTaskDN;
+  private ?string    $subTaskCN;
+  private array      $auditList;
+  private ?Ldap\Link $ldapBind;
+  private ?object    $gateway;
 
-  public function __construct (int $auditRetention, array $auditList, $gateway = NULL, string $subTaskDN = NULL, string $subTaskCN = NULL, $ldapBind = NULL)
+  public function __construct (
+    int $auditRetention,
+    array $auditList,
+    ?object $gateway = NULL,
+    ?string $subTaskDN = NULL,
+    ?string $subTaskCN = NULL,
+    ?Ldap\Link $ldapBind = NULL
+  )
   {
     $this->auditRetention = $auditRetention;
     $this->subTaskDN      = $subTaskDN;
