@@ -1,10 +1,12 @@
 <?php
 
+namespace FusionDirectory\Mail;
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
-class MailController
+class MailLib
 {
 
   protected string  $setFrom;
@@ -100,7 +102,7 @@ class MailController
       try {
         $this->mail->send();
 
-      } catch (Exception $e) {
+      } catch (\Exception $e) {
         $errors[] = $this->mail->ErrorInfo;
 
       }
