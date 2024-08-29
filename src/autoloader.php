@@ -10,6 +10,12 @@ spl_autoload_register(function ($class) {
   // Simple array to keep track of which classes have already been loaded.
   static $classes = [];
 
+  if (strpos($class, 'PHPMailer') !== FALSE) {
+    require_once("/usr/share/php/libphp-phpmailer/src/Exception.php");
+    require_once("/usr/share/php/libphp-phpmailer/src/PHPMailer.php");
+    require_once("/usr/share/php/libphp-phpmailer/src/SMTP.php");
+  }
+
   // Avoids re-loading classes that have already been loaded.
   if (array_key_exists($class, $classes)) {
     return;
