@@ -141,7 +141,8 @@ class WebServiceCall
       ]
     ];
 
-    $this->setCurlSettings($_ENV['FUSION_DIRECTORY_API_URL'] . '/objects/tasks/' . $dn, $data, 'PATCH');
+    // the DN can contain space which must be URL encoded correctly.
+    $this->setCurlSettings($_ENV['FUSION_DIRECTORY_API_URL'] . '/objects/tasks/' . rawurlencode($dn), $data, 'PATCH');
     curl_exec($this->ch);
 
     $this->handleCurlError($this->ch);
@@ -168,7 +169,8 @@ class WebServiceCall
       'refreshUser' => NULL
     ];
 
-    $this->setCurlSettings($_ENV['FUSION_DIRECTORY_API_URL'] . '/objects/user/' . $dn, $data, 'PATCH');
+    // A DN can contain space and therefore must be encoded properly before processing.
+    $this->setCurlSettings($_ENV['FUSION_DIRECTORY_API_URL'] . '/objects/user/' . rawurlencode($dn), $data, 'PATCH');
     curl_exec($this->ch);
 
     $this->handleCurlError($this->ch);
