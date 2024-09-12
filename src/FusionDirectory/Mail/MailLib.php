@@ -72,13 +72,13 @@ class MailLib
       $this->mail->AuthType   = 'LOGIN';
     } else {
       // Disable SSL certificate verification
-      $this->mail->SMTPOptions = array(
-        'ssl' => array(
+      $this->mail->SMTPOptions = [
+        'ssl' => [
           'verify_peer'       => FALSE,
           'verify_peer_name'  => FALSE,
           'allow_self_signed' => TRUE
-        )
-      );
+        ]
+      ];
     }
 
 
