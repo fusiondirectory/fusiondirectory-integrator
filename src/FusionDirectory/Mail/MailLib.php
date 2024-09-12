@@ -55,12 +55,35 @@ class MailLib
      * $this->mail->Helo = '['.$_SERVER['SERVER_ADDR'].']';
      */
 
-    $this->mail->SMTPAuth   = TRUE;
-    $this->mail->Username   = $_ENV["MAIL_USER"];
-    $this->mail->Password   = $_ENV["MAIL_PASS"];
-    $this->mail->SMTPSecure = $_ENV["MAIL_SEC"];
-    $this->mail->Port       = $_ENV["MAIL_PORT"];
-    $this->mail->AuthType   = 'LOGIN';
+
+    // Authentication mechanism
+    if ($_ENV["MAIL_AUTH"] == "TRUE") {
+      $this->mail->SMTPAuth = TRUE;
+      $this->mail->Username = $_ENV["MAIL_USER"];
+      $this->mail->Password = $_ENV["MAIL_PASS"];
+    } else {
+      $this->mail->SMTPAuth = FALSE;
+    }
+
+
+    // Security logic about SSL certificate potential verification.
+    if ($_ENV["MAIL_SEC_VERIFY"] == "TRUE") {
+      $this->mail->SMTPSecure = $_ENV["MAIL_SEC"];
+      $this->mail->AuthType   = 'LOGIN';
+    } else {
+      // Disable SSL certificate verification
+      $this->mail->SMTPOptions = array(
+        'ssl' => array(
+          'verify_peer'       => FALSE,
+          'verify_peer_name'  => FALSE,
+          'allow_self_signed' => TRUE
+        )
+      );
+    }
+
+
+    $this->mail->Port = $_ENV["MAIL_PORT"];
+
 
     if (!empty($this->attachments)) {
       foreach ($this->attachments as $attachment) {
