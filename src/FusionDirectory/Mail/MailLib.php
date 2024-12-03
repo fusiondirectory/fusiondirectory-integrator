@@ -52,8 +52,6 @@ class MailLib
 
     // Set UTF-8 character encoding
     $this->mail->CharSet  = 'UTF-8';
-    // Set base64 for non UTF-8 char
-    $this->mail->Encoding = 'base64';
 
     /*
      * In case there are FQDN errors responses by the SMTP server, try below.
