@@ -33,6 +33,11 @@ class WebServiceCall
   {
     $this->ch = !empty($URL) ? curl_init($URL) : curl_init($this->URL);
 
+    // We require to set a proper http_agent
+    $os = PHP_OS;
+    $phpVersion = PHP_VERSION;
+    $customUserAgent = "FusionDirectory/Integrator ($os; PHP $phpVersion; https://www.fusiondirectory.org) WebserviceLib";
+
     // Manage a trick to perform refresh on user DN
     if (!empty($data) && array_key_exists('refreshUser', $data)) {
       // Empty array is required to update the user dn without passing information, json_encode will transform it to {}
@@ -43,12 +48,13 @@ class WebServiceCall
 
     if (!empty($method)) {
       $this->method = $method;
-
+   
       // set the curl options based on the method required.
       switch (strtolower($this->method)) {
         case 'patch' :
           curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
           curl_setopt($this->ch, CURLOPT_POSTFIELDS, json_encode($this->data));
+          curl_setopt($this->ch, CURLOPT_USERAGENT, $customUserAgent);
           break;
         case 'get' :
           // No curl_setopt required
@@ -56,13 +62,16 @@ class WebServiceCall
         case 'put':
           curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'PUT');
           curl_setopt($this->ch, CURLOPT_POSTFIELDS, json_encode($this->data));
+          curl_setopt($this->ch, CURLOPT_USERAGENT, $customUserAgent);
           break;
         case 'delete':
           curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+          curl_setopt($this->ch, CURLOPT_USERAGENT, $customUserAgent);
           break;
         case 'post':
           curl_setopt($this->ch, CURLOPT_POST, TRUE);
           curl_setopt($this->ch, CURLOPT_POSTFIELDS, json_encode($this->data));
+          curl_setopt($this->ch, CURLOPT_USERAGENT, $customUserAgent);
           break;
       }
     }
@@ -103,9 +112,15 @@ class WebServiceCall
 
     $ch = curl_init($this->URL);
 
+    // We require to set a proper http_agent
+    $os = PHP_OS;
+    $phpVersion = PHP_VERSION;
+    $customUserAgent = "FusionDirectory/Integrator ($os; PHP $phpVersion; https://www.fusiondirectory.org) WebserviceLib";
+
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($loginData));
     curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_USERAGENT, $customUserAgent);
 
     $response = curl_exec($ch);
     $this->handleCurlError($ch);
