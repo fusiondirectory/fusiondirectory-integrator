@@ -198,5 +198,22 @@ class WebServiceCall
     curl_close($this->ch);
     return $response;
   }
+
+  /**
+ * @return array
+ * @throws Exception
+ */
+public function execute(): array
+{
+    $this->setCurlSettings();
+    $response = curl_exec($this->ch);
+    $this->handleCurlError($this->ch);
+    
+    $decoded = json_decode($response, true);
+    curl_close($this->ch);
+    
+    return $decoded;
+}
+
 }
 
