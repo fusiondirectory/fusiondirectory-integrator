@@ -1,2 +1,10 @@
 .directory
 
+filelist
+phpstan-baseline.neon
+phpstan.neon
+.idea/.gitignore
+.idea/fusiondirectory-integrator.iml
+.idea/modules.xml
+.idea/php.xml
+.idea/vcs.xml
