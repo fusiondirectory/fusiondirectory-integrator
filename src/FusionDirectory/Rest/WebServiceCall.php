@@ -10,6 +10,8 @@ class WebServiceCall
    */
   private $ch;
 
+  private $httpStatusCode; // Store the HTTP status code
+
   /**
    * @param string $URL
    * @param string $method
@@ -70,7 +72,12 @@ class WebServiceCall
           break;
         case 'post':
           curl_setopt($this->ch, CURLOPT_POST, TRUE);
-          curl_setopt($this->ch, CURLOPT_POSTFIELDS, json_encode($this->data));
+
+          // Allows a POST to be performed without DATA
+          if (!empty($this->data)) {
+            curl_setopt($this->ch, CURLOPT_POSTFIELDS, json_encode($this->data));
+          }
+          
           curl_setopt($this->ch, CURLOPT_USERAGENT, $customUserAgent);
           break;
       }
@@ -206,16 +213,35 @@ class WebServiceCall
 public function execute(): array
 {
     $response = curl_exec($this->ch);
+
+    // Capture the HTTP status code
+    $this->httpStatusCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
+
     $this->handleCurlError($this->ch);
-    
+
+    // Handle 204 No Content response
+    if ($this->httpStatusCode === 204) {
+        curl_close($this->ch);
+        return []; // Return an empty array for 204 responses
+    }
+
     $decoded = json_decode($response, true);
     curl_close($this->ch);
-    
+
     if (!is_array($decoded)) {
         throw new \Exception('Invalid JSON response: ' . $response);
     }
-    
+
     return $decoded;
+}
+
+/**
+ * Retrieve the HTTP status code of the last request
+ * @return int
+ */
+public function getHttpStatusCode(): int
+{
+    return $this->httpStatusCode;
 }
 
 }
