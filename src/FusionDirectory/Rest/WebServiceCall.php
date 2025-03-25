@@ -77,7 +77,7 @@ class WebServiceCall
           if (!empty($this->data)) {
             curl_setopt($this->ch, CURLOPT_POSTFIELDS, json_encode($this->data));
           }
-          
+
           curl_setopt($this->ch, CURLOPT_USERAGENT, $customUserAgent);
           break;
       }
@@ -206,12 +206,12 @@ class WebServiceCall
     return $response;
   }
 
-/**
- * @return array
- * @throws \Exception
- */
-public function execute(): array
-{
+  /**
+   * @return array
+   * @throws \Exception
+   */
+  public function execute (): array
+  {
     $response = curl_exec($this->ch);
 
     // Capture the HTTP status code
@@ -225,7 +225,7 @@ public function execute(): array
         return []; // Return an empty array for 204 responses
     }
 
-    $decoded = json_decode($response, true);
+    $decoded = json_decode($response, TRUE);
     curl_close($this->ch);
 
     if (!is_array($decoded)) {
@@ -233,16 +233,16 @@ public function execute(): array
     }
 
     return $decoded;
-}
+  }
 
-/**
- * Retrieve the HTTP status code of the last request
- * @return int
- */
-public function getHttpStatusCode(): int
-{
+  /**
+   * Retrieve the HTTP status code of the last request
+   * @return int
+   */
+  public function getHttpStatusCode (): int
+  {
     return $this->httpStatusCode;
-}
+  }
 
 }
 
