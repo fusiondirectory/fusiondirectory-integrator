@@ -199,18 +199,21 @@ class WebServiceCall
     return $response;
   }
 
-  /**
+/**
  * @return array
- * @throws Exception
+ * @throws \Exception
  */
 public function execute(): array
 {
-    $this->setCurlSettings();
     $response = curl_exec($this->ch);
     $this->handleCurlError($this->ch);
     
     $decoded = json_decode($response, true);
     curl_close($this->ch);
+    
+    if (!is_array($decoded)) {
+        throw new \Exception('Invalid JSON response: ' . $response);
+    }
     
     return $decoded;
 }
