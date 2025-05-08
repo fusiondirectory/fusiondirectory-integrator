@@ -87,7 +87,7 @@ class WebServiceCall
 
     if (empty($this->token)) {
       if (empty($this->authData)) {
-        $this->token = $this->getAccessToken($_ENV['WEB_LOGIN'], $_ENV['WEB_PASS']);
+        $this->token = $this->getAccessToken($_ENV['FUSIONDIRECTORY_WEBSERVICE_LOGIN'], $_ENV['FUSIONDIRECTORY_WEBSERVICE_PASSWORD']);
       } else {
         $this->token = $this->getAccessToken($this->authData['username'], $this->authData['password']);
       }
@@ -164,7 +164,7 @@ class WebServiceCall
     ];
 
     // the DN can contain space which must be URL encoded correctly.
-    $this->setCurlSettings($_ENV['FUSION_DIRECTORY_API_URL'] . '/objects/tasks/' . rawurlencode($dn), $data, 'PATCH');
+    $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/tasks/' . rawurlencode($dn), $data, 'PATCH');
     curl_exec($this->ch);
 
     $this->handleCurlError($this->ch);
@@ -192,7 +192,7 @@ class WebServiceCall
     ];
 
     // A DN can contain space and therefore must be encoded properly before processing.
-    $this->setCurlSettings($_ENV['FUSION_DIRECTORY_API_URL'] . '/objects/user/' . rawurlencode($dn), $data, 'PATCH');
+    $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/user/' . rawurlencode($dn), $data, 'PATCH');
     curl_exec($this->ch);
 
     $this->handleCurlError($this->ch);
