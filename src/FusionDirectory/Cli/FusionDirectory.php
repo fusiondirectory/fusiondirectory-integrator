@@ -47,19 +47,21 @@ class FusionDirectory extends Application
 
     // Variables to be set during script calling.
     $this->vars = [
-      'fd_home'          => '/usr/share/fusiondirectory',
-      'fd_config_dir'    => '/etc/fusiondirectory',
-      'config_file'      => 'fusiondirectory.conf',
-      'secrets_file'     => 'fusiondirectory.secrets',
-      'fd_cache'         => '/var/cache/fusiondirectory',
-      'fd_smarty_path'   => '/usr/share/php/smarty3/Smarty.class.php',
-      'fd_spool_dir'     => '/var/spool/fusiondirectory',
-      'locale_dir'       => 'locale',
-      'class_cache'      => 'class.cache',
-      'locale_cache_dir' => 'locale',
-      'tmp_dir'          => 'tmp',
-      'fai_log_dir'      => 'fai',
-      'template_dir'     => 'template'
+      'fd_home'               => '/usr/share/fusiondirectory',
+      'fd_config_dir'         => '/etc/fusiondirectory',
+      'config_file'           => 'fusiondirectory.conf',
+      'secrets_file'          => 'fusiondirectory.secrets',
+      'fd_cache'              => '/var/cache/fusiondirectory',
+      'fd_smarty_path'        => '/usr/share/php/smarty3/Smarty.class.php',
+      'fd_spool_dir'          => '/var/spool/fusiondirectory',
+      'fd_log_dir'            => '/var/log/fusiondirectory',
+      'orchestrator_srv_dir'  => '/srv/orchestrator',
+      'locale_dir'            => 'locale',
+      'class_cache'           => 'class.cache',
+      'locale_cache_dir'      => 'locale',
+      'tmp_dir'               => 'tmp',
+      'fai_log_dir'           => 'fai',
+      'template_dir'          => 'template'
     ];
   }
 
