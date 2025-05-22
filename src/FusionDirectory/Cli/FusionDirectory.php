@@ -22,8 +22,14 @@
 namespace FusionDirectory\Cli;
 
 use Exception;
+use Throwable;
 use SimpleXMLElement;
 use SodiumException;
+
+// Catch all the exceptions and print them properly
+set_exception_handler(function (Throwable $e) {
+  echo "Caught exception: " . $e->getMessage() . PHP_EOL;
+});
 
 /**
  * Base class for interacting with FusionDirectory specifics
