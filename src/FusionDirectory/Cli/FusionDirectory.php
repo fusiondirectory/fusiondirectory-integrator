@@ -25,6 +25,11 @@ use Exception;
 use SimpleXMLElement;
 use SodiumException;
 
+// Catch all the exceptions and print them properly
+set_exception_handler(function (Exception $e) {
+  echo "Caught exception: " . $e->getMessage() . PHP_EOL;
+});
+
 /**
  * Base class for interacting with FusionDirectory specifics
  */
