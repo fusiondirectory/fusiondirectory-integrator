@@ -133,24 +133,25 @@ class FusionDirectory extends Application
 
 
   /**
-   * @param string $var
+   * @param array|string $vars
    * @return void
    * @throws Exception
    * Note : This allows to set var in the variables.php file in FD.
-   * This method needs rework as multiple variables are not received, only a string.
-   * (logic of multiple should be defined in parent class)
+   * FIXME: No hint for the function because PHP7 doesn't support mixed or union hints
    */
-  protected function cmdSetVar (string $var): void
+  protected function cmdSetVar ($vars): void
   {
     $varsToSet = [];
-    if (preg_match('/^([^=]+)=(.+)$/', $var, $m)) {
-      if (isset($this->vars[strtolower($m[1])])) {
-        $varsToSet[strtolower($m[1])] = $m[2];
+    foreach ($vars as $var) {
+      if (preg_match('/^([^=]+)=(.+)$/', $var, $m)) {
+        if (isset($this->vars[strtolower($m[1])])) {
+          $varsToSet[strtolower($m[1])] = $m[2];
+        } else {
+          throw new Exception('Var "' . $m[1] . '" does not exists. Use --list-vars to get the list of vars.');
+        }
       } else {
-        throw new Exception('Var "' . $m[1] . '" does not exists. Use --list-vars to get the list of vars.');
+        throw new Exception('Incorrect syntax for --set-var: "' . $var . '". Use var=value');
       }
-    } else {
-      throw new Exception('Incorrect syntax for --set-var: "' . $var . '". Use var=value');
     }
 
     if (isset($varsToSet['fd_home'])) {
