@@ -207,6 +207,11 @@ class Schema
     $currentItemName  = '';
     $data             = [];
     while (($line = fgets($fh)) !== FALSE) {
+      // Trim $line if it contains attributeType to avoid any issues
+      if (stripos($line, "attributeType") != False) {
+        $line = trim($line);
+      }
+
       if (preg_match('/^#/', $line) === 1) {
         continue;
       }
