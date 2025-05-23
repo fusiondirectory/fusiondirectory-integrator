@@ -208,7 +208,7 @@ class Schema
     $data             = [];
     while (($line = fgets($fh)) !== FALSE) {
       // Trim $line if it contains attributeType to avoid any issues
-      if (stripos($line, "attributeType") != False) {
+      if (stripos($line, "attributeType") != FALSE) {
         $line = trim($line);
       }
 
