@@ -142,7 +142,7 @@ class FusionDirectory extends Application
   protected function cmdSetVar ($vars): void
   {
     $varsToSet = [];
-    foreach ($vars as $var) {
+    foreach ((array)$vars as $var) {
       if (preg_match('/^([^=]+)=(.+)$/', $var, $m)) {
         if (isset($this->vars[strtolower($m[1])])) {
           $varsToSet[strtolower($m[1])] = $m[2];
