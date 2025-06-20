@@ -129,11 +129,11 @@ class Application
           if (!isset($this->options[$m[1]]) && !isset($this->options[$m[1] . ':'])) {
             echo 'Unrecognized option ' . $argv[$i] . "\n";
             $this->usage($argv);
-          } else if (!isset($argv[$i+1])) {
+          } else if (!isset($argv[$i + 1])) {
             echo 'Missing value for option ' . $argv[$i] . "\n";
             $this->usage($argv);
-          } else if ($argv[$i+1][0] === '-') {
-            echo 'Value ' . $argv[$i+1] . ' is not correct for option ' . $argv[$i] . "\n";
+          } else if ($argv[$i + 1][0] === '-') {
+            echo 'Value ' . $argv[$i + 1] . ' is not correct for option ' . $argv[$i] . "\n";
             $this->usage($argv);
           }
         } elseif (preg_match('/^-(.+)$/', $argv[$i], $m)) {
