@@ -151,7 +151,15 @@ class Link
    */
   public function mod_add (string $dn, array $attrs, array $controls = []): Result
   {
-    $result = ldap_mod_add_ext($this->cid, $dn, $attrs, $controls);
+    // Remove empty values
+    $attrsNoneEmpty = [];
+    foreach ($attrs as $key => $value) {
+      if ( ($value != "") && ($value !== []) ) {
+        $attrsNoneEmpty[$key] = $value;
+      }
+    }
+
+    $result = ldap_mod_add_ext($this->cid, $dn, $attrsNoneEmpty, $controls);
     if ($result === FALSE) {
       throw new Exception('Mod add failed: '.ldap_error($this->cid), ldap_errno($this->cid));
     }
@@ -170,7 +178,15 @@ class Link
    */
   public function mod_replace (string $dn, array $attrs, array $controls = []): Result
   {
-    $result = ldap_mod_replace_ext($this->cid, $dn, $attrs, $controls);
+    // Remove empty values
+    $attrsNoneEmpty = [];
+    foreach ($attrs as $key => $value) {
+      if ( ($value != "") && ($value !== []) ) {
+        $attrsNoneEmpty[$key] = $value;
+      }
+    }
+
+    $result = ldap_mod_replace_ext($this->cid, $dn, $attrsNoneEmpty, $controls);
     if ($result === FALSE) {
       throw new Exception('Mod replace failed: '.ldap_error($this->cid), ldap_errno($this->cid));
     }
@@ -189,7 +205,15 @@ class Link
    */
   public function mod_del (string $dn, array $attrs, array $controls = []): Result
   {
-    $result = ldap_mod_del_ext($this->cid, $dn, $attrs, $controls);
+    // Remove empty values
+    $attrsNoneEmpty = [];
+    foreach ($attrs as $key => $value) {
+      if ( ($value != "") && ($value !== []) ) {
+        $attrsNoneEmpty[$key] = $value;
+      }
+    }
+
+    $result = ldap_mod_del_ext($this->cid, $dn, $attrsNoneEmpty, $controls);
     if ($result === FALSE) {
       throw new Exception('Mod del failed: '.ldap_error($this->cid), ldap_errno($this->cid));
     }
@@ -226,7 +250,15 @@ class Link
    */
   public function add (string $dn, array $attrs, array $controls = []): Result
   {
-    $result = ldap_add_ext($this->cid, $dn, $attrs, $controls);
+    // Remove empty values
+    $attrsNoneEmpty = [];
+    foreach ($attrs as $key => $value) {
+      if ( ($value != "") && ($value !== []) ) {
+        $attrsNoneEmpty[$key] = $value;
+      }
+    }
+
+    $result = ldap_add_ext($this->cid, $dn, $attrsNoneEmpty, $controls);
     if ($result === FALSE) {
       throw new Exception('Add failed: '.ldap_error($this->cid), ldap_errno($this->cid));
     }
