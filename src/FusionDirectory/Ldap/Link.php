@@ -153,8 +153,8 @@ class Link
   {
     // Remove empty values
     $attrsNoneEmpty = [];
-    foreach ($attrs as $key => $value){
-      if ( ($value != "") && ($value !== []) ){
+    foreach ($attrs as $key => $value) {
+      if ( ($value != "") && ($value !== []) ) {
         $attrsNoneEmpty[$key] = $value;
       }
     }
@@ -180,8 +180,8 @@ class Link
   {
     // Remove empty values
     $attrsNoneEmpty = [];
-    foreach ($attrs as $key => $value){
-      if ( ($value != "") && ($value !== []) ){
+    foreach ($attrs as $key => $value) {
+      if ( ($value != "") && ($value !== []) ) {
         $attrsNoneEmpty[$key] = $value;
       }
     }
@@ -207,8 +207,8 @@ class Link
   {
     // Remove empty values
     $attrsNoneEmpty = [];
-    foreach ($attrs as $key => $value){
-      if ( ($value != "") && ($value !== []) ){
+    foreach ($attrs as $key => $value) {
+      if ( ($value != "") && ($value !== []) ) {
         $attrsNoneEmpty[$key] = $value;
       }
     }
@@ -252,8 +252,8 @@ class Link
   {
     // Remove empty values
     $attrsNoneEmpty = [];
-    foreach ($attrs as $key => $value){
-      if ( ($value != "") && ($value !== []) ){
+    foreach ($attrs as $key => $value) {
+      if ( ($value != "") && ($value !== []) ) {
         $attrsNoneEmpty[$key] = $value;
       }
     }
