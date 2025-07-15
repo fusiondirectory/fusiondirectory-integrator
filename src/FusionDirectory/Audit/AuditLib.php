@@ -17,6 +17,8 @@ class AuditLib
   private array      $auditList;
   private ?Ldap\Link $ldapBind;
   private ?object    $gateway;
+  private ?string    $mainTaskDn;
+  private ?string    $repeatableSchedule;
 
   public function __construct (
     int $auditRetention,
@@ -24,15 +26,19 @@ class AuditLib
     ?object $gateway     = NULL,
     ?string $subTaskDN   = NULL,
     ?string $subTaskCN   = NULL,
+    ?string $mainTaskDn  = NULL,
+    ?string $repeatableSchedule = NULL,
     ?Ldap\Link $ldapBind = NULL
   )
   {
-    $this->auditRetention = $auditRetention;
-    $this->subTaskDN      = $subTaskDN;
-    $this->subTaskCN      = $subTaskCN;
-    $this->auditList      = $auditList;
-    $this->ldapBind       = $ldapBind;
-    $this->gateway        = $gateway;
+    $this->auditRetention     = $auditRetention;
+    $this->subTaskDN          = $subTaskDN;
+    $this->subTaskCN          = $subTaskCN;
+    $this->auditList          = $auditList;
+    $this->ldapBind           = $ldapBind;
+    $this->gateway            = $gateway;
+    $this->mainTaskDn         = $mainTaskDn;
+    $this->repeatableSchedule = $repeatableSchedule;
   }
 
   /**
@@ -50,7 +56,7 @@ class AuditLib
     if (empty($this->auditList)) {
       $result[$this->subTaskCN]['result']       = TRUE;
       $result[$this->subTaskCN]['info']         = 'No audit to be removed.';
-      $result[$this->subTaskCN]['statusUpdate'] = $this->gateway->updateTaskStatus($this->subTaskDN, $this->subTaskCN, "2");
+      $result[$this->subTaskCN]['statusUpdate'] = $this->gateway->updateTaskStatus($this->subTaskDN, $this->subTaskCN, "2", $this->mainTaskDn, $this->repeatableSchedule);
     }
 
     foreach ($this->auditList as $record) {
@@ -68,10 +74,10 @@ class AuditLib
         // Update tasks accordingly if LDAP succeeded. TRUE Boolean returned by ldap.
         if ($result[$this->subTaskCN]['result']) {
           // Update the subtask with the status completed a.k.a "2".
-          $result[$this->subTaskCN]['statusUpdate'] = $this->gateway->updateTaskStatus($this->subTaskDN, $this->subTaskCN, "2");
+          $result[$this->subTaskCN]['statusUpdate'] = $this->gateway->updateTaskStatus($this->subTaskDN, $this->subTaskCN, "2", $this->mainTaskDn, $this->repeatableSchedule);
         } else {
           // Update the task with the LDAP potential error code.
-          $result[$this->subTaskCN]['statusUpdate'] = $this->gateway->updateTaskStatus($this->subTaskDN, $this->subTaskCN, $result[$record['dn']]['result']);
+          $result[$this->subTaskCN]['statusUpdate'] = $this->gateway->updateTaskStatus($this->subTaskDN, $this->subTaskCN, $result[$record['dn']]['result'], $this->mainTaskDn, $this->repeatableSchedule);
         }
       }
     }
