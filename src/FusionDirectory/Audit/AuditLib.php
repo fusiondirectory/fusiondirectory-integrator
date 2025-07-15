@@ -23,12 +23,12 @@ class AuditLib
   public function __construct (
     int $auditRetention,
     array $auditList,
-    ?object $gateway     = NULL,
-    ?string $subTaskDN   = NULL,
-    ?string $subTaskCN   = NULL,
-    ?string $mainTaskDn  = NULL,
+    ?object $gateway            = NULL,
+    ?string $subTaskDN          = NULL,
+    ?string $subTaskCN          = NULL,
+    ?string $mainTaskDn         = NULL,
     ?string $repeatableSchedule = NULL,
-    ?Ldap\Link $ldapBind = NULL
+    ?Ldap\Link $ldapBind        = NULL
   )
   {
     $this->auditRetention     = $auditRetention;
