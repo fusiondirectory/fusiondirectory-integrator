@@ -124,12 +124,12 @@ class AuditLib
   }
 
   /**
-   * @param $generalizeLdapDateTime
+   * @param string $generalizeLdapDateTime
    * @return DateTime|string[]
    * @throws Exception
    * Note : Simply take a generalized Ldap time (with UTC = Z) and transform it to php object dateTime.
    */
-  public function generalizeLdapTimeToPhpObject ($generalizeLdapDateTime)
+  public function generalizeLdapTimeToPhpObject (string $generalizeLdapDateTime)
   {
     // Extract the date part (first 8 characters: YYYYMMDD), we do not care about hour and seconds.
     $auditTimeFormatted = substr($generalizeLdapDateTime, 0, 8);
