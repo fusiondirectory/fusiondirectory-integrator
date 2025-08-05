@@ -67,7 +67,8 @@ class FusionDirectory extends Application
       'locale_cache_dir'      => 'locale',
       'tmp_dir'               => 'tmp',
       'fai_log_dir'           => 'fai',
-      'template_dir'          => 'template'
+      'template_dir'          => 'template',
+      'fd_schema_dir'         => '/etc/ldap/schema/fusiondirectory/'
     ];
   }
 
