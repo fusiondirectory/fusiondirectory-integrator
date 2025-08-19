@@ -331,7 +331,7 @@ class Link
    * @param Link   $link    An active Link instance
    * @param string $baseDn  The directory base DN to append after ou=fusiondirectory
    * @param string $scope   LDAP search scope: 'base' | 'one' | 'subtree'
-   * @return array Each attributes fetched
+   * @return array Each attributes
    *
    * @throws \FusionDirectory\Ldap\Exception
    */
