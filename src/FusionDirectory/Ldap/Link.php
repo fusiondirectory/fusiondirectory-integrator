@@ -324,29 +324,4 @@ class Link
     $list->rewind();
     return $list->current();
   }
-
-  /**
-   * Return all attributes under "cn=config,ou=fusiondirectory,<baseDn>"
-   *
-   * @param Link   $link    An active Link instance
-   * @param string $baseDn  The directory base DN to append after ou=fusiondirectory
-   * @param string $scope   LDAP search scope: 'base' | 'one' | 'subtree'
-   * @return array Each attributes
-   *
-   * @throws \FusionDirectory\Ldap\Exception
-   */
-  public static function getFusionDirectoryConfigAttributes (Link $link, string $baseDn, string $scope = 'subtree'): array
-  {
-    $configDn = 'cn=config,ou=fusiondirectory,' . $baseDn;
-
-    $result = $link->search($configDn, '(objectClass=*)', ['*','+'], $scope);
-    $result->assert();
-
-    $entries = [];
-    foreach ($result as $attrs) {
-      $entries[] = $attrs;
-    }
-    return $entries;
-  }
-
 }
