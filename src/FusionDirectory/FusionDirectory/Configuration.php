@@ -25,6 +25,8 @@ declare(strict_types = 1);
 
 namespace FusionDirectory\FusionDirectory;
 
+use FusionDirectory\Ldap\Link;
+
 /**
  * FusionDirectory Configuration class
  *
@@ -43,7 +45,7 @@ class Configuration
     *
     * @throws \FusionDirectory\Ldap\Exception
     */
-  public static function getFusionDirectoryConfigAttributes (\FusionDirectory\Ldap\Link $link, string $baseDn, string $scope = 'subtree'): array
+  public static function getFusionDirectoryConfigAttributes (Link $link, string $baseDn, string $scope = 'subtree'): array
   {
     $configDn = 'cn=config,ou=fusiondirectory,' . $baseDn;
 
