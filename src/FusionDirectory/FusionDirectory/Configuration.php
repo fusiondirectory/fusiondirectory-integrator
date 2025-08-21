@@ -31,18 +31,18 @@ namespace FusionDirectory\FusionDirectory;
  * This class provides methods to retrieve configuration attributes from the FusionDirectory LDAP directory.
  */
 class Configuration
-{ 
- 
- /**
-   * Return all attributes under "cn=config,ou=fusiondirectory,<baseDn>"
-   *
-   * @param Link   $link    An active Link instance
-   * @param string $baseDn  The directory base DN to append after ou=fusiondirectory
-   * @param string $scope   LDAP search scope: 'base' | 'one' | 'subtree'
-   * @return array Each attributes
-   *
-   * @throws \FusionDirectory\Ldap\Exception
-   */
+{
+
+  /**
+    * Return all attributes under "cn=config,ou=fusiondirectory,<baseDn>"
+    *
+    * @param Link   $link    An active Link instance
+    * @param string $baseDn  The directory base DN to append after ou=fusiondirectory
+    * @param string $scope   LDAP search scope: 'base' | 'one' | 'subtree'
+    * @return array Each attributes
+    *
+    * @throws \FusionDirectory\Ldap\Exception
+    */
   public static function getFusionDirectoryConfigAttributes (Link $link, string $baseDn, string $scope = 'subtree'): array
   {
     $configDn = 'cn=config,ou=fusiondirectory,' . $baseDn;
