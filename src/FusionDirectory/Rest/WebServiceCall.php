@@ -60,6 +60,7 @@ class WebServiceCall
           break;
         case 'get' :
           // No curl_setopt required
+          curl_setopt($this->ch, CURLOPT_USERAGENT, $customUserAgent);
           break;
         case 'put':
           curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, 'PUT');
@@ -200,6 +201,49 @@ class WebServiceCall
 
     if ($response === $dn) {
       $response = 'User: ' . $dn . ' has been correctly refreshed.';
+    }
+
+    curl_close($this->ch);
+    return $response;
+  }
+
+  /**
+   * @param string $dn
+   * @param string $tab
+   * Note : Get the user informations for specific tab
+   */
+  public function getUserTab (string $dn, string $tab)
+  {
+    // the DN can contain space which must be URL encoded correctly.
+    $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/user/' . rawurlencode($dn) . '/' . rawurlencode($tab), NULL, 'GET');
+    curl_exec($this->ch);
+
+    $this->handleCurlError($this->ch);
+    $response = json_decode(curl_multi_getcontent($this->ch), TRUE);
+
+    curl_close($this->ch);
+    return $response;
+  }
+
+  /**
+   * @param string $dn
+   * @param string $tab
+   * @param string $attribute
+   * @param array $data
+   * Note : Change an user attribute
+   */
+  public function setUserTabAttribute (string $dn, string $tab, string $attribute, array $data)
+  {
+    // the DN can contain space which must be URL encoded correctly.
+    $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/user/' . rawurlencode($dn) . '/' . rawurlencode($tab) . '/' . rawurlencode($attribute), $data, 'PUT');
+    curl_exec($this->ch);
+
+    $this->handleCurlError($this->ch);
+    $response = json_decode(curl_multi_getcontent($this->ch), TRUE);
+
+    // Manage the response from current FD WebService, returned DN seems to mean success.
+    if ($response === $dn) {
+      $response = 'User successfully updated';
     }
 
     curl_close($this->ch);
