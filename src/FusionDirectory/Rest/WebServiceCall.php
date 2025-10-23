@@ -229,10 +229,10 @@ class WebServiceCall
    * @param string $dn
    * @param string $tab
    * @param string $attribute
-   * @param string $data
+   * @param array $data
    * Note : Change an user attribute
    */
-  public function setUserTabAttribute (string $dn, string $tab, string $attribute, $data)
+  public function setUserTabAttribute (string $dn, string $tab, string $attribute, array $data)
   {
     // the DN can contain space which must be URL encoded correctly.
     $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/user/' . rawurlencode($dn) . '/' . rawurlencode($tab) . '/' . rawurlencode($attribute), $data, 'PUT');
