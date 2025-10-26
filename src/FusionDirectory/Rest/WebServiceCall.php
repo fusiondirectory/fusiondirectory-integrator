@@ -225,6 +225,29 @@ class WebServiceCall
     return $response;
   }
 
+ /**
+  * @param string $dn
+  * @param array $data
+  * Note : Set tabs and value for an existing user
+  */
+ public function setUser (string $dn, array $data)
+ {
+   // the DN can contain space which must be URL encoded correctly.
+   $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/user/' . rawurlencode($dn), $data, 'PATCH');
+   curl_exec($this->ch);
+  +
+   $this->handleCurlError($this->ch);
+   $response = json_decode(curl_multi_getcontent($this->ch), TRUE);
+  +
+   // Manage the response from current FD WebService, returned DN seems to mean success.
+   if ($response === $dn) {
+     $response = 'User successfully updated';
+   }
+  +
+   curl_close($this->ch);
+   return $response;
+ }
+
   /**
    * @param string $dn
    * @param string $tab
