@@ -205,15 +205,7 @@ class Link
    */
   public function mod_del (string $dn, array $attrs, array $controls = []): Result
   {
-    // Remove empty values
-    $attrsNoneEmpty = [];
-    foreach ($attrs as $key => $value) {
-      if ( ($value != "") && ($value !== []) ) {
-        $attrsNoneEmpty[$key] = $value;
-      }
-    }
-
-    $result = ldap_mod_del_ext($this->cid, $dn, $attrsNoneEmpty, $controls);
+    $result = ldap_mod_del_ext($this->cid, $dn, $attrs, $controls);
     if ($result === FALSE) {
       throw new Exception('Mod del failed: '.ldap_error($this->cid), ldap_errno($this->cid));
     }
