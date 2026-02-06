@@ -8,7 +8,7 @@ stages:
 
 # PHP lint
 create_php_lint_rapport:
-  image: registry.fusiondirectory.org/fusiondirectory/fd/phpcodesniffer-cli:fd
+  image: registry.fusiondirectory.org/fusiondirectory/fd/phpcodesniffer-cli:fd-php8
   stage: lint
   only:
     - branches
@@ -19,7 +19,7 @@ create_php_lint_rapport:
 
 # PHP codesniffer
 create_php_code_sniffer_rapport:
-  image: registry.fusiondirectory.org/fusiondirectory/fd/phpcodesniffer-cli:fd
+  image: registry.fusiondirectory.org/fusiondirectory/fd/phpcodesniffer-cli:fd-php8
   stage: codestyle
   only:
     - branches
@@ -33,7 +33,7 @@ create_php_code_sniffer_rapport:
 
 # phpstan
 create_phpstan_rapport:
-  image: registry.fusiondirectory.org/fusiondirectory/fd/phpstan-cli:fd
+  image: registry.fusiondirectory.org/fusiondirectory/fd/phpstan-cli:fd-php8
   stage: codestyle
   only:
     - branches
@@ -41,6 +41,7 @@ create_phpstan_rapport:
     - test -d ../dev-tools/ && rm -Rf ../dev-tools/
     - git clone --depth 1 https://gitlab.fusiondirectory.org/fusiondirectory/dev-tools.git ../dev-tools
     - apt install libphp-phpmailer
+    - composer global require phpstan/phpstan
     - cp ../dev-tools/phpstan/fusiondirectory-integrator/*.neon .
     - /root/.composer/vendor/bin/phpstan analyse -c phpstan.neon
 
@@ -80,11 +81,4 @@ trigger-ci-debian-bullseye:
     project: debian/bullseye-fusiondirectory-integrator-dev
     branch: "main"
 
-trigger-ci-ubuntu-focal:
-  stage: trigger
-  only:
-    - dev
-  trigger:
-    project: ubuntu/focal-fusiondirectory-integrator-dev
-    branch: "main"
 
