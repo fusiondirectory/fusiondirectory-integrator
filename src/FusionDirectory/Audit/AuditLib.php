@@ -85,44 +85,6 @@ class AuditLib
     return $result;
   }
 
-
-  /**
-   * @return array
-   * Note : This will return a validation of audit log suppression
-   * @throws Exception
-   */
-
-  public function checkAuditPassedRetentionCLI (): array
-  {
-    $result = [];
-
-    $today = new DateTime();
-
-    // Enter condition if lib is used by CLI tools
-    // In case no audit exists, we have to update the tasks as well. Meaning below loop won't be reached.
-    if (empty($this->auditList)) {
-      return ['No audit entries found.'];
-    }
-
-    foreach ($this->auditList as $record) {
-      // Record in Human Readable date time object
-      $auditDateTime = $this->generalizeLdapTimeToPhpObject($record['fdauditdatetime'][0]);
-
-      $interval = $today->diff($auditDateTime);
-
-      // Check if the interval is equal or greater than auditRetention setting
-      if ($interval->days >= $this->auditRetention) {
-        // If greater, delete the DN audit entry, we reuse removeSubTask method from gateway and get ldap response.(bool).
-
-        $result[$record['dn']]               = 'audit entry requiring deletion';
-        $result[$record['dn']]['ldapStatus'] = $this->ldapBind->delete($record['dn']);
-
-      }
-
-    }
-    return $result;
-  }
-
   /**
    * @param string $generalizeLdapDateTime
    * @return DateTime|string[]
