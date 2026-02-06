@@ -31,7 +31,7 @@ namespace FusionDirectory\Ldap;
 class Link
 {
   /**
-  * @var resource
+  * @var LDAP\Connection
   */
   protected $cid;
   /**
@@ -124,7 +124,7 @@ class Link
    *
    * @throws \FusionDirectory\Ldap\Exception
    */
-  public function search (string $basedn, string $filter, array $attrs = [], string $scope = 'subtree', array $controls = NULL): Result
+  public function search (string $basedn, string $filter, array $attrs = [], string $scope = 'subtree', ?array $controls = NULL): Result
   {
     $functions = ['base' => 'ldap_read','one' => 'ldap_list','subtree' => 'ldap_search'];
 
