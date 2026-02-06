@@ -80,8 +80,8 @@ class Result implements \Iterator,\Countable
   protected $errno = 0;
 
   /**
-   * @param resource $link
-   * @param resource $result
+   * @param \LDAP\Connection $link
+   * @param \LDAP\Result $result
    *
    * @throws \FusionDirectory\Ldap\Exception When ldap_parse_result fails
    */
