@@ -31,7 +31,7 @@ namespace FusionDirectory\Ldap;
 class Link
 {
   /**
-  * @var LDAP\Connection
+  * @var \LDAP\Connection
   */
   protected $cid;
   /**
