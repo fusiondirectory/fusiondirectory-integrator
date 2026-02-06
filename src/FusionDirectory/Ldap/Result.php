@@ -71,7 +71,7 @@ class Result implements \Iterator,\Countable
    */
   protected $result;
   /**
-   * @var resource|false
+   * @var \LDAP\ResultEntry|false
    */
   protected $cur;
   /**
