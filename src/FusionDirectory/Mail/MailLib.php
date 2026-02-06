@@ -26,7 +26,7 @@ class MailLib
     string $body,
     ?string $signature,
     string $subject,
-    string $receipt = NULL, array $attachments = NULL
+    ?string $receipt = NULL, ?array $attachments = NULL
   )
   {
     // The TRUE value passed it to enable the exception handling properly.

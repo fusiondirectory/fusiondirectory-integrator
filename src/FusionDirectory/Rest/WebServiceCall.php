@@ -31,7 +31,7 @@ class WebServiceCall
    * @param array|NULL $data
    * @param string|NULL $method
    */
-  public function setCurlSettings (string $URL = NULL, array $data = NULL, string $method = NULL)
+  public function setCurlSettings (?string $URL = NULL, ?array $data = NULL, ?string $method = NULL)
   {
     $this->ch = !empty($URL) ? curl_init($URL) : curl_init($this->URL);
 
