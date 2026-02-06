@@ -67,7 +67,7 @@ class Result implements \Iterator,\Countable
    */
   protected $link;
   /**
-   * @var resource
+   * @var \LDAP\Result
    */
   protected $result;
   /**
