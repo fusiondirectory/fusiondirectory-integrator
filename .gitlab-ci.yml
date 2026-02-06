@@ -76,9 +76,9 @@ build-release:
 trigger-ci-debian-bullseye:
   stage: trigger
   only:
-    - dev
+    - php8
   trigger:
     project: debian/bullseye-fusiondirectory-integrator-dev
-    branch: "main"
+    branch: "php8"
 
 
