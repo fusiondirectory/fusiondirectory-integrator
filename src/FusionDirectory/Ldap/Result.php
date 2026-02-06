@@ -63,7 +63,7 @@ class Result implements \Iterator,\Countable
    */
   public $serverctrls;
   /**
-   * @var resource
+   * @var \LDAP\Connection
    */
   protected $link;
   /**
