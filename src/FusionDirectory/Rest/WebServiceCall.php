@@ -6,7 +6,7 @@ class WebServiceCall
   private $URL, $method, $token; //String
   private $data, $authData; //Array
   /**
-   * @var false|resource
+   * @var false|CurlHandle
    */
   private $ch;
 
