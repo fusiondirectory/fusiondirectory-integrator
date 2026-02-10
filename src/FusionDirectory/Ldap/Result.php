@@ -131,7 +131,7 @@ class Result implements \Iterator,\Countable
    *
    * @return array<string, array<string>>
    */
-  public function current ()
+  public function current () : array
   {
     assert($this->cur instanceof \LDAP\ResultEntry);
     $att = [];
@@ -152,7 +152,7 @@ class Result implements \Iterator,\Countable
    *
    * @return string
    */
-  public function key ()
+  public function key () : string
   {
     assert($this->cur instanceof \LDAP\ResultEntry);
     return trim(ldap_get_dn($this->link, $this->cur));
