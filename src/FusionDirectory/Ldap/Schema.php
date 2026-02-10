@@ -140,7 +140,7 @@ class Schema
   {
     $errors = [];
     set_error_handler(
-      function (int $errno, string $errstr, string $errfile, int $errline, array $errcontext) use (&$errors): bool
+      function (int $errno, string $errstr, string $errfile, int $errline) use (&$errors): bool
       {
         $errors[] = $errstr;
         return TRUE;
