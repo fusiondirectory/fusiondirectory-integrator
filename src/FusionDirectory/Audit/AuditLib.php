@@ -15,7 +15,6 @@ class AuditLib
   private ?string    $subTaskDN;
   private ?string    $subTaskCN;
   private array      $auditList;
-  private ?Ldap\Link $ldapBind;
   private ?object    $gateway;
   private ?string    $mainTaskDn;
   private ?string    $repeatableSchedule;
@@ -28,14 +27,12 @@ class AuditLib
     ?string $subTaskCN          = NULL,
     ?string $mainTaskDn         = NULL,
     ?string $repeatableSchedule = NULL,
-    ?Ldap\Link $ldapBind        = NULL
   )
   {
     $this->auditRetention     = $auditRetention;
     $this->subTaskDN          = $subTaskDN;
     $this->subTaskCN          = $subTaskCN;
     $this->auditList          = $auditList;
-    $this->ldapBind           = $ldapBind;
     $this->gateway            = $gateway;
     $this->mainTaskDn         = $mainTaskDn;
     $this->repeatableSchedule = $repeatableSchedule;
