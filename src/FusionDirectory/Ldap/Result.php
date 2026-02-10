@@ -133,7 +133,7 @@ class Result implements \Iterator,\Countable
    */
   public function current ()
   {
-    assert(is_resource($this->cur));
+    assert($this->cur instanceof \LDAP\ResultEntry);
     $att = [];
     for ($a = ldap_first_attribute($this->link, $this->cur); $a !== FALSE; $a = ldap_next_attribute($this->link, $this->cur)) {
       $values = @ldap_get_values($this->link, $this->cur, $a);
@@ -154,7 +154,7 @@ class Result implements \Iterator,\Countable
    */
   public function key ()
   {
-    assert(is_resource($this->cur));
+    assert($this->cur instanceof \LDAP\ResultEntry);
     return trim(ldap_get_dn($this->link, $this->cur));
   }
 
@@ -185,7 +185,7 @@ class Result implements \Iterator,\Countable
    */
   public function valid (): bool
   {
-    return (($this->errno === 0) && is_resource($this->cur));
+    return (($this->errno === 0) && $this->cur instanceof \LDAP\ResultEntry);
   }
 
   /**
