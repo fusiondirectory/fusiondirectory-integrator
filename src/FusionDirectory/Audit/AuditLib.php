@@ -26,7 +26,7 @@ class AuditLib
     ?string $subTaskDN          = NULL,
     ?string $subTaskCN          = NULL,
     ?string $mainTaskDn         = NULL,
-    ?string $repeatableSchedule = NULL,
+    ?string $repeatableSchedule = NULL
   )
   {
     $this->auditRetention     = $auditRetention;
