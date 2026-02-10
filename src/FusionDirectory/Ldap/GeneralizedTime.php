@@ -80,13 +80,13 @@ class GeneralizedTime
       '$/';
 
     if (preg_match($pattern, $string, $m) === 1) {
-      if (!isset($m['minute']) || ($m['minute'] === '')) {
+      if ($m['minute'] === '') {
         $m['minute'] = '00';
       }
-      if (!isset($m['second']) || ($m['second'] === '')) {
+      if ($m['second'] === '') {
         $m['second'] = '00';
       }
-      if (!isset($m['fraction']) || ($m['fraction'] === '')) {
+      if ($m['fraction'] === '') {
         $m['fraction'] = '0';
       }
       try {
