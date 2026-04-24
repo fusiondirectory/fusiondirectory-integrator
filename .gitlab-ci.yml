@@ -80,11 +80,4 @@ trigger-ci-debian-bullseye:
     project: debian/bullseye-fusiondirectory-integrator-dev
     branch: "main"
 
-trigger-ci-ubuntu-focal:
-  stage: trigger
-  only:
-    - dev
-  trigger:
-    project: ubuntu/focal-fusiondirectory-integrator-dev
-    branch: "main"
 
