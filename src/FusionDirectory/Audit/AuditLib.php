@@ -2,106 +2,66 @@
 
 namespace FusionDirectory\Audit;
 
-// Simplify the base code by import (using) base php classes
 use DateTime;
 use DateTimeZone;
 use Exception;
-use FusionDirectory\Ldap;
+use FusionDirectory\Audit\Action\MarkTaskCompleted;
+use FusionDirectory\Audit\Action\RemoveAuditRecord;
 
 class AuditLib
 {
 
-  private int        $auditRetention;
-  private ?string    $subTaskDN;
-  private ?string    $subTaskCN;
-  private array      $auditList;
-  private ?object    $gateway;
-  private ?string    $mainTaskDn;
-  private ?string    $repeatableSchedule;
-
   public function __construct (
-    int $auditRetention,
-    array $auditList,
-    ?object $gateway            = NULL,
-    ?string $subTaskDN          = NULL,
-    ?string $subTaskCN          = NULL,
-    ?string $mainTaskDn         = NULL,
-    ?string $repeatableSchedule = NULL
-  )
-  {
-    $this->auditRetention     = $auditRetention;
-    $this->subTaskDN          = $subTaskDN;
-    $this->subTaskCN          = $subTaskCN;
-    $this->auditList          = $auditList;
-    $this->gateway            = $gateway;
-    $this->mainTaskDn         = $mainTaskDn;
-    $this->repeatableSchedule = $repeatableSchedule;
-  }
+    private readonly int   $auditRetention,
+    private readonly array $auditList,
+  ) {}
 
   /**
-   * @return array
-   * Note : This will return a validation of audit log suppression
+   * @return list<RemoveAuditRecord|MarkTaskCompleted>
    * @throws Exception
    */
-  public function checkAuditPassedRetentionOrchestrator (): array
+  public function getRetentionActions (
+    string  $subTaskDN,
+    string  $subTaskCN,
+    ?string $mainTaskDn         = NULL,
+    ?string $repeatableSchedule = NULL
+  ): array
   {
-    $result = [];
+    $actions = [];
+    $today   = new DateTime();
 
-    $today = new DateTime();
-
-    // In case no audit exists, we have to update the tasks as well. Meaning below loop won't be reached.
     if (empty($this->auditList)) {
-      $result[$this->subTaskCN]['result']       = TRUE;
-      $result[$this->subTaskCN]['info']         = 'No audit to be removed.';
-      $result[$this->subTaskCN]['statusUpdate'] = $this->gateway->updateTaskStatus($this->subTaskDN, $this->subTaskCN, "2", $this->mainTaskDn, $this->repeatableSchedule);
+      $actions[] = new MarkTaskCompleted($subTaskDN, $subTaskCN, $mainTaskDn, $repeatableSchedule);
+      return $actions;
     }
 
     foreach ($this->auditList as $record) {
-      // Record in Human Readable date time object
       $auditDateTime = $this->generalizeLdapTimeToPhpObject($record['fdauditdatetime'][0]);
+      $interval      = $today->diff($auditDateTime);
 
-      $interval = $today->diff($auditDateTime);
-
-      // Check if the interval is equal or greater than auditRetention setting
       if ($interval->days >= $this->auditRetention) {
-        // If greater, delete the DN audit entry, we reuse removeSubTask method from gateway and get ldap response.(bool).
-        $result[$this->subTaskCN]['result'] = $this->gateway->removeSubTask($record['dn']);
-        $result[$this->subTaskCN]['info']   = 'Audit record removed.';
-
-        // Update tasks accordingly if LDAP succeeded. TRUE Boolean returned by ldap.
-        if ($result[$this->subTaskCN]['result']) {
-          // Update the subtask with the status completed a.k.a "2".
-          $result[$this->subTaskCN]['statusUpdate'] = $this->gateway->updateTaskStatus($this->subTaskDN, $this->subTaskCN, "2", $this->mainTaskDn, $this->repeatableSchedule);
-        } else {
-          // Update the task with the LDAP potential error code.
-          $result[$this->subTaskCN]['statusUpdate'] = $this->gateway->updateTaskStatus($this->subTaskDN, $this->subTaskCN, $result[$record['dn']]['result'], $this->mainTaskDn, $this->repeatableSchedule);
-        }
+        $actions[] = new RemoveAuditRecord($record['dn']);
       }
     }
 
-    return $result;
+    return $actions;
   }
 
   /**
    * @param string $generalizeLdapDateTime
    * @return DateTime|string[]
    * @throws Exception
-   * Note : Simply take a generalized Ldap time (with UTC = Z) and transform it to php object dateTime.
    */
   public function generalizeLdapTimeToPhpObject (string $generalizeLdapDateTime)
   {
-    // Extract the date part (first 8 characters: YYYYMMDD), we do not care about hour and seconds.
     $auditTimeFormatted = substr($generalizeLdapDateTime, 0, 8);
 
-    // Create a DateTime object using only the date part, carefully setting the timezone to UTC. Audit timestamp is UTC
     $auditDate = DateTime::createFromFormat('Ymd', $auditTimeFormatted, new DateTimeZone('UTC'));
 
-    // Check if the DateTime object was created successfully
     if (!$auditDate) {
       return ['Error in Time conversion from Audit record with timestamp :' . $generalizeLdapDateTime];
     }
 
-    // Transform dateTime object from UTC to local defined dateTime. (Timezone is set in index.php if used by orchestrator).
     $auditDate->setTimezone(new DateTimeZone(date_default_timezone_get()));
 
     return $auditDate;
