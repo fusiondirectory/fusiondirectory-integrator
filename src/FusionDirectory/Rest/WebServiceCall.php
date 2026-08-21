@@ -131,15 +131,24 @@ class WebServiceCall
     curl_setopt($ch, CURLOPT_USERAGENT, $customUserAgent);
 
     $response = curl_exec($ch);
-    $this->handleCurlError($ch);
+    $this->handleCurlError($ch, $response);
 
     curl_close($ch);
 
     // Token should be decoded, to remove quotes.
-    return json_decode($response);
+    $decoded = json_decode($response);
+    if ($decoded === NULL) {
+      throw new \Exception('Failed to decode access token from webservice response: ' . ($response ?: 'Empty response'));
+    }
+    return $decoded;
   }
 
-  private function handleCurlError ($ch): void
+  /**
+   * Handle cURL errors: transport-level failures and HTTP status codes.
+   * Transport errors use echo+exit (fatal/unrecoverable).
+   * HTTP errors throw Exception (caller can handle gracefully).
+   */
+  private function handleCurlError ($ch, $response = NULL): void
   {
     // String is returned on success but a boolean on error.
     if (curl_error($ch)) {
@@ -149,6 +158,16 @@ class WebServiceCall
       ];
       echo json_encode($error, JSON_PRETTY_PRINT);
       exit;
+    }
+
+    // Check HTTP status code for server-side errors (4xx, 5xx)
+    $httpStatusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($httpStatusCode >= 400) {
+      // Truncate response to avoid excessively long error output
+      $body = is_string($response) ? substr($response, 0, 512) : 'No response body';
+      throw new \Exception(
+        "HTTP $httpStatusCode error from FusionDirectory webservice: " . $body
+      );
     }
   }
 
@@ -166,9 +185,9 @@ class WebServiceCall
 
     // the DN can contain space which must be URL encoded correctly.
     $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/tasks/' . rawurlencode($dn), $data, 'PATCH');
-    curl_exec($this->ch);
+    $rawResponse = curl_exec($this->ch);
 
-    $this->handleCurlError($this->ch);
+    $this->handleCurlError($this->ch, $rawResponse);
     $response = json_decode(curl_multi_getcontent($this->ch), TRUE);
 
     // Manage the response from current FD WebService, returned DN seems to mean success.
@@ -194,9 +213,9 @@ class WebServiceCall
 
     // A DN can contain space and therefore must be encoded properly before processing.
     $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/user/' . rawurlencode($dn), $data, 'PATCH');
-    curl_exec($this->ch);
+    $rawResponse = curl_exec($this->ch);
 
-    $this->handleCurlError($this->ch);
+    $this->handleCurlError($this->ch, $rawResponse);
     $response = json_decode(curl_multi_getcontent($this->ch), TRUE);
 
     if ($response === $dn) {
@@ -216,9 +235,9 @@ class WebServiceCall
   {
     // the DN can contain space which must be URL encoded correctly.
     $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/user/' . rawurlencode($dn) . '/' . rawurlencode($tab), NULL, 'GET');
-    curl_exec($this->ch);
+    $rawResponse = curl_exec($this->ch);
 
-    $this->handleCurlError($this->ch);
+    $this->handleCurlError($this->ch, $rawResponse);
     $response = json_decode(curl_multi_getcontent($this->ch), TRUE);
 
     curl_close($this->ch);
@@ -234,9 +253,9 @@ class WebServiceCall
   {
     // the DN can contain space which must be URL encoded correctly.
     $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/user/' . rawurlencode($dn), $data, 'PATCH');
-    curl_exec($this->ch);
+    $rawResponse = curl_exec($this->ch);
 
-    $this->handleCurlError($this->ch);
+    $this->handleCurlError($this->ch, $rawResponse);
     $response = json_decode(curl_multi_getcontent($this->ch), TRUE);
 
     // Manage the response from current FD WebService, returned DN seems to mean success.
@@ -259,9 +278,9 @@ class WebServiceCall
   {
     // the DN can contain space which must be URL encoded correctly.
     $this->setCurlSettings($_ENV['FUSIONDIRECTORY_WEBSERVICE_URL'] . '/objects/user/' . rawurlencode($dn) . '/' . rawurlencode($tab) . '/' . rawurlencode($attribute), $data, 'PUT');
-    curl_exec($this->ch);
+    $rawResponse = curl_exec($this->ch);
 
-    $this->handleCurlError($this->ch);
+    $this->handleCurlError($this->ch, $rawResponse);
     $response = json_decode(curl_multi_getcontent($this->ch), TRUE);
 
     // Manage the response from current FD WebService, returned DN seems to mean success.
@@ -284,7 +303,7 @@ class WebServiceCall
     // Capture the HTTP status code
     $this->httpStatusCode = curl_getinfo($this->ch, CURLINFO_HTTP_CODE);
 
-    $this->handleCurlError($this->ch);
+    $this->handleCurlError($this->ch, $response);
 
     // Handle 204 No Content response
     if ($this->httpStatusCode === 204) {
