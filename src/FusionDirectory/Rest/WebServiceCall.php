@@ -137,7 +137,7 @@ class WebServiceCall
 
     // Token should be decoded, to remove quotes.
     $decoded = json_decode($response);
-    if ($decoded === null) {
+    if ($decoded === NULL) {
       throw new \Exception('Failed to decode access token from webservice response: ' . ($response ?: 'Empty response'));
     }
     return $decoded;
@@ -148,7 +148,7 @@ class WebServiceCall
    * Transport errors use echo+exit (fatal/unrecoverable).
    * HTTP errors throw Exception (caller can handle gracefully).
    */
-  private function handleCurlError ($ch, $response = null): void
+  private function handleCurlError ($ch, $response = NULL): void
   {
     // String is returned on success but a boolean on error.
     if (curl_error($ch)) {
