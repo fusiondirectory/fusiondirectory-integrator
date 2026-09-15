@@ -49,8 +49,10 @@ class MailLib
 
     $this->mail->isSMTP();
 
-    if ($_ENV["MAIL_DEBUG"] == "TRUE") {
-      $this->mail->SMTPDebug = SMTP::DEBUG_SERVER;
+    if (isset($_ENV["MAIL_DEBUG"])) {
+      if ($_ENV["MAIL_DEBUG"] == "TRUE") {
+        $this->mail->SMTPDebug = SMTP::DEBUG_SERVER;
+      }
     }
 
     $this->mail->Host = $_ENV["MAIL_HOST"];
