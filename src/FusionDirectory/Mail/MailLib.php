@@ -48,6 +48,11 @@ class MailLib
     $errors = [];
 
     $this->mail->isSMTP();
+
+    if ($_ENV["MAIL_DEBUG"] == "TRUE") {
+      $this->mail->SMTPDebug = SMTP::DEBUG_SERVER;
+    }
+
     $this->mail->Host = $_ENV["MAIL_HOST"];
 
     // Set UTF-8 character encoding
