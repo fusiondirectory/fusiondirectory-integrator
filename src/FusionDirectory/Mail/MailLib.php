@@ -49,47 +49,41 @@ class MailLib
 
     $this->mail->isSMTP();
 
-    if (isset($_ENV["MAIL_DEBUG"])) {
-      if ($_ENV["MAIL_DEBUG"] == "TRUE") {
-        $this->mail->SMTPDebug = SMTP::DEBUG_SERVER;
-      }
-    }
-
     $this->mail->Host = $_ENV["MAIL_HOST"];
 
-    // Set UTF-8 character encoding
-    $this->mail->CharSet  = 'UTF-8';
+    if (isset($_ENV["MAIL_DEBUG"])) {
 
-    /*
-     * In case there are FQDN errors responses by the SMTP server, try below.
-     * $this->mail->Helo = '['.$_SERVER['SERVER_ADDR'].']';
-     */
+      if ($_ENV["MAIL_DEBUG"] == "CLIENT") {
+        $this->mail->SMTPDebug = SMTP::DEBUG_CLIENT;
+      }
 
-    // Authentication mechanism
-    if (isset($_ENV["MAIL_AUTH"])) {
-      if ($_ENV["MAIL_AUTH"] == "TRUE") {
-        $this->mail->SMTPAuth = TRUE;
-        $this->mail->Username = $_ENV["MAIL_USER"];
-        $this->mail->Password = $_ENV["MAIL_PASS"];
-      } else {
-        $this->mail->SMTPAuth = FALSE;
+      if ($_ENV["MAIL_DEBUG"] == "SERVER") {
+        $this->mail->SMTPDebug = SMTP::DEBUG_SERVER;
+      }
+
+      if ($_ENV["MAIL_DEBUG"] == "CONNECTION") {
+        $this->mail->SMTPDebug = SMTP::DEBUG_CONNECTION;
       }
     }
 
-    // Security logic about SSL certificate potential verification.
-    if (isset($_ENV["MAIL_AUTH"])) {
-      if ($_ENV["MAIL_SEC_VERIFY"] == "TRUE") {
-        $this->mail->SMTPSecure = $_ENV["MAIL_SEC"];
-        $this->mail->AuthType   = 'LOGIN';
+    if ($_ENV["MAIL_SECURITY"] == 'tls') {
+      $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+    } else {
+      if ($_ENV["MAIL_SECURITY"] == 'ssl') {
+        $this->mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+      }
+    }
+
+    if (isset($_ENV["MAIL_AUTH"]) && ((strtolower($_ENV["MAIL_SECURITY"]) == 'tls' || strtolower($_ENV["MAIL_SECURITY"]) == 'ssl'))) {
+
+      if (isset($_ENV["MAIL_USER"]) && (isset($_ENV["MAIL_PASS"]))) {
+        $this->mail->Username = $_ENV["MAIL_USER"];
+        $this->mail->Password = $_ENV["MAIL_PASS"];
+        $this->mail->AuthType = $_ENV["MAIL_AUTH"];
+        $this->mail->SMTPAuth = TRUE;
       } else {
-        // Disable SSL certificate verification
-        $this->mail->SMTPOptions = [
-          'ssl' => [
-          'verify_peer'       => FALSE,
-          'verify_peer_name'  => FALSE,
-          'allow_self_signed' => TRUE
-          ]
-        ];
+        $this->mail->SMTPAuth = FALSE;
+        $this->mail->AuthType = '';
       }
     }
 
@@ -98,6 +92,8 @@ class MailLib
     } else {
       $this->mail->Port = 25;
     }
+
+    $this->mail->CharSet  = 'UTF-8';
 
     if (!empty($this->attachments)) {
       foreach ($this->attachments as $attachment) {
