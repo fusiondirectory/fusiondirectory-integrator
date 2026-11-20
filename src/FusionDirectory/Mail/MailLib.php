@@ -221,7 +221,7 @@ class MailLib
     }
 
     // Define the mail as HTML
-    $this->mail->isHTML(true);
+    $this->mail->isHTML(TRUE);
 
     $this->mail->Subject = $this->subject;
     $this->mail->Body    = $this->body;
